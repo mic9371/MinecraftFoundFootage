@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.13-SNAPSHOT'
+	id 'fabric-loom' version '1.16.1'
 	id 'maven-publish'
 }
 
@@ -116,6 +116,12 @@ dependencies {
 	//Simple Voice Chat
 	implementation "de.maxhenkel.voicechat:voicechat-api:2.5.0"
 	modImplementation "maven.modrinth:simple-voice-chat:fabric-${voicechat_version}"
+
+	//Sodium (compat work): compile against it always, run with it using -PwithSodium
+	modCompileOnly "maven.modrinth:sodium:mc1.21.1-0.6.13-fabric"
+	if (project.hasProperty('withSodium')) {
+		modLocalRuntime "maven.modrinth:sodium:mc1.21.1-0.6.13-fabric"
+	}
 
 	//Sound Physics Remastered compat
 	modCompileOnly "maven.modrinth:qyVF9oeo:fabric-1.21.1-1.4.11"

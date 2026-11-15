@@ -103,15 +103,4 @@ public class WorldRendererMixin {
     private void spb$blit(CallbackInfo ci) {
         DeferredRenderer.get().blit();
     }
-
-    @Inject(method = "renderLayer", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;getShader()Lnet/minecraft/client/gl/ShaderProgram;", shift = At.Shift.AFTER))
-    private void spb$updateUniforms(RenderLayer renderLayer, double x, double y, double z, Matrix4f viewMatrix, Matrix4f positionMatrix, CallbackInfo ci) {
-        ShaderProgram shader = RenderSystem.getShader();
-        if (shader != null) {
-            var normalMat = shader.getUniform("NormalMat");
-            if (normalMat != null) {
-                normalMat.set(viewMatrix.normal(new Matrix3f()));
-            }
-        }
-    }
 }

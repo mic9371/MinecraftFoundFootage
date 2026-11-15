@@ -124,7 +124,7 @@ public class SPBRevampedClient implements ClientModInitializer {
 
         FlockManager.init();
 
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POOLROOMS_SKY_BLOCK, RenderLayers.getPoolroomsSky());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.POOLROOMS_SKY_BLOCK, com.sp.compat.SodiumCompat.PRESENT ? RenderLayer.getSolid() : RenderLayers.getPoolroomsSky());
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BOTTOM_TRIM, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.WALL_TEXT_1, RenderLayer.getCutout());
@@ -631,6 +631,11 @@ public class SPBRevampedClient implements ClientModInitializer {
     }
 
     public static boolean shouldRenderCameraEffect() {
+        // The VHS look needs the deferred renderer, which is off while Sodium is installed (see SodiumCompat)
+        if (com.sp.compat.SodiumCompat.PRESENT) {
+            return false;
+        }
+
         return (!isInBackrooms() && ConfigStuff.enableVhsEffect) || (isInBackrooms() && ConfigStuff.enableVhsEffectInTheBackrooms);
     }
 

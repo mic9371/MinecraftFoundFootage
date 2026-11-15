@@ -12,7 +12,7 @@ This branch ports [SpacePotatoee's Found Footage mod](https://github.com/SpacePo
 - [Simple Voice Chat](https://modrinth.com/plugin/simple-voice-chat) 2.5.26 or newer
 - Bundled in the jar: Veil, Cardinal Components API, MidnightLib
 
-Incompatible: Sodium and Iris (tested: Sodium replaces `WorldRenderer.renderLayer`, so the mod's rendering mixins fail to apply and the game crashes on load), plus OptiFine, Phosphor, Indium, Create and Modern Industrialization, which the original mod already declared as breaking and which were not retested. Lithium works and is no longer listed as incompatible.
+Sodium 0.6.x loads and runs, but with the mod's visuals (deferred lighting, PBR, VHS look) switched off, because Sodium's chunk renderer does not provide what they need yet (plan: [docs/sodium-port.md](docs/sodium-port.md)). Tested with Sodium 0.6.13; Sodium 0.7 and newer break Veil's own Sodium integration, so they are declared incompatible. Iris is incompatible. OptiFine, Phosphor, Create and Modern Industrialization were declared incompatible by the original mod and were not retested. Lithium works.
 
 ## Building
 

@@ -372,7 +372,7 @@ public class DeferredRenderer implements ResourceReloader, NativeResource {
      * @return Whether the deferred rendering pipeline is supported
      */
     public static boolean isSupported() {
-        return !MinecraftClient.isFabulousGraphicsOrBetter();
+        return !MinecraftClient.isFabulousGraphicsOrBetter() && !com.sp.compat.SodiumCompat.PRESENT;
     }
 
     /**

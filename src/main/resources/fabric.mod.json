@@ -67,12 +67,11 @@
 		"mod-menu": "*"
 	},
 	"breaks": {
-		"sodium": "*",
 		"create": "*",
 		"iris": "*",
 		"optifine": "*",
 		"phosphor": "*",
-		"indium": "*",
-		"modern_industrialization": "*"
+		"modern_industrialization": "*",
+		"sodium": ">=0.7.0"
 	}
 }

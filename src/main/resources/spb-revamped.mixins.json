@@ -1,6 +1,7 @@
 {
   "required": true,
   "package": "com.sp.mixin",
+  "plugin": "com.sp.mixin.SPBMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "BodyControlMixin",
@@ -35,6 +36,7 @@
     "deferred.BlockModelRendererMixin",
     "deferred.ParticleManagerMixin",
     "deferred.ShaderStateMixin",
+    "deferred.VanillaChunkUniformsMixin",
     "deferred.WorldRendererMixin",
     "DisableF3Mixin",
     "DisableJumpMixin",

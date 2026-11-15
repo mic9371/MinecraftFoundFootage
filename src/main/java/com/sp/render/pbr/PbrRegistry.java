@@ -33,7 +33,7 @@ public abstract class PbrRegistry {
     public static void registerPBR(Block block, PbrMaterial material) {
         PBR_MATERIALS.remove(block);
         PBR_MATERIALS.put(block, material);
-        BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayers.getPbrLayer());
+        BlockRenderLayerMap.INSTANCE.putBlock(block, com.sp.compat.SodiumCompat.PRESENT ? net.minecraft.client.render.RenderLayer.getCutout() : RenderLayers.getPbrLayer());
     }
 
     public static PbrMaterial getMaterial(Block block){
