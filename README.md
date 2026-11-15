@@ -12,7 +12,7 @@ This branch ports [SpacePotatoee's Found Footage mod](https://github.com/SpacePo
 - [Simple Voice Chat](https://modrinth.com/plugin/simple-voice-chat) 2.5.26 or newer
 - Bundled in the jar: Veil, Cardinal Components API, MidnightLib
 
-Incompatible (as before): Sodium, Iris, OptiFine, Lithium, Phosphor, Indium, Create, Modern Industrialization.
+Incompatible: Sodium and Iris (tested: Sodium replaces `WorldRenderer.renderLayer`, so the mod's rendering mixins fail to apply and the game crashes on load), plus OptiFine, Phosphor, Indium, Create and Modern Industrialization, which the original mod already declared as breaking and which were not retested. Lithium works and is no longer listed as incompatible.
 
 ## Building
 
