@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import com.sp.block.entity.TinyFluorescentLightBlockEntity;
 import com.sp.init.ModBlockEntities;
 import net.minecraft.block.*;
@@ -17,9 +18,16 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
 public class TinyFluorescentLightBlock extends BlockWithEntity {
-    public static final BooleanProperty ON = BooleanProperty.of("on");
-    public static final BooleanProperty COPY = BooleanProperty.of("copy");
-    public static final BooleanProperty BLACKOUT = BooleanProperty.of("blackout");
+    public static final MapCodec<TinyFluorescentLightBlock> CODEC = createCodec(TinyFluorescentLightBlock::new);
+
+    @Override
+    protected MapCodec<? extends TinyFluorescentLightBlock> getCodec() {
+        return CODEC;
+    }
+
+    public static final BooleanProperty ON = FluorescentLightBlock.ON; // shared: since 1.20.5 block state properties are compared by identity
+    public static final BooleanProperty COPY = FluorescentLightBlock.COPY; // shared: since 1.20.5 block state properties are compared by identity
+    public static final BooleanProperty BLACKOUT = FluorescentLightBlock.BLACKOUT; // shared: since 1.20.5 block state properties are compared by identity
 
     private static final VoxelShape FLOOR_X_AXIS_SHAPE = Block.createCuboidShape(6.0, 14.0, 6.0, 10.0, 16.0, 10.0);
 
@@ -72,6 +80,6 @@ public class TinyFluorescentLightBlock extends BlockWithEntity {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, ModBlockEntities.TINY_FLUORESCENT_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
+        return validateTicker(type, ModBlockEntities.TINY_FLUORESCENT_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
     }
 }

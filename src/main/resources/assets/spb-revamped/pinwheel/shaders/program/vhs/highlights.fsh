@@ -1,3 +1,5 @@
+// Declared here because Veil 1.21.1 drops #veil:buffer directives reached through #include
+#veil:buffer veil:camera VeilCamera
 uniform sampler2D DiffuseSampler0;
 uniform sampler2D HandDepth;
 uniform usampler2D TransparentMatSampler;

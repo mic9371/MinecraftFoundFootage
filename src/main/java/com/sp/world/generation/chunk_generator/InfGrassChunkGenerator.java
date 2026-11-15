@@ -1,5 +1,6 @@
 package com.sp.world.generation.chunk_generator;
 
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.sp.SPBRevamped;
@@ -39,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public final class InfGrassChunkGenerator extends BackroomsChunkGenerator {
-    public static final Codec<InfGrassChunkGenerator> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<InfGrassChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                             BiomeSource.CODEC.fieldOf("biome_source").forGetter(generator -> generator.biomeSource),
                             ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(generator -> generator.settings)
@@ -73,7 +74,7 @@ public final class InfGrassChunkGenerator extends BackroomsChunkGenerator {
         float sampler = SimplexNoise.noise(x, 0);
         if (sampler >= 0.6) {
             if (server != null) {
-                roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "inf_grass/utility_pole");
+                roomIdentifier = Identifier.of(SPBRevamped.MOD_ID, "inf_grass/utility_pole");
 
                 optional = structureTemplateManager.getTemplate(roomIdentifier);
 
@@ -118,7 +119,7 @@ public final class InfGrassChunkGenerator extends BackroomsChunkGenerator {
     }
 
 
-    protected Codec<? extends ChunkGenerator> getCodec() {
+    protected MapCodec<? extends ChunkGenerator> getCodec() {
         return CODEC;
     }
 
@@ -126,7 +127,7 @@ public final class InfGrassChunkGenerator extends BackroomsChunkGenerator {
     /* this method builds the shape of the terrain. it places stone everywhere, which will later be overwritten with grass, terracotta, snow, sand, etc
          by the buildSurface method. it also is responsible for putting the water in oceans. it returns a CompletableFuture-- you'll likely want this to be delegated to worker threads. */
     @Override
-    public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
+    public CompletableFuture<Chunk> populateNoise(Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for(int k = 0; k < 16; ++k) {
             for(int l = 0; l < 16; ++l) {

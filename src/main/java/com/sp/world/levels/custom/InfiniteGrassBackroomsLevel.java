@@ -1,5 +1,6 @@
 package com.sp.world.levels.custom;
 
+import net.minecraft.world.TeleportTarget;
 import com.sp.cca_stuff.PlayerComponent;
 import com.sp.init.BackroomsLevels;
 import com.sp.world.events.infinite_grass.InfiniteGrassAmbience;
@@ -46,13 +47,11 @@ public class InfiniteGrassBackroomsLevel extends BackroomsLevel {
         Optional<Vec3d> optional = Optional.empty();
         BlockPos blockPos1 = new BlockPos(0, 64, 0);
         if (playerComponent.player instanceof ServerPlayerEntity) {
-            BlockPos blockPos = ((ServerPlayerEntity) playerComponent.player).getSpawnPointPosition();
-            float f = ((ServerPlayerEntity) playerComponent.player).getSpawnAngle();
-            boolean bl = ((ServerPlayerEntity) playerComponent.player).isSpawnForced();
-            ServerWorld serverWorld = playerComponent.player.getWorld().getServer().getWorld(World.OVERWORLD);
-
-            if (serverWorld != null && blockPos != null) {
-                optional = PlayerEntity.findRespawnPosition(serverWorld, blockPos, f, bl, true);
+            // getRespawnTarget(alive = true) performs the same bed/anchor lookup as the old
+            // PlayerEntity.findRespawnPosition without consuming respawn anchor charges.
+            TeleportTarget respawnTarget = ((ServerPlayerEntity) playerComponent.player).getRespawnTarget(true, TeleportTarget.NO_OP);
+            if (respawnTarget.world().getRegistryKey() == World.OVERWORLD && !respawnTarget.missingRespawnBlock()) {
+                optional = Optional.of(respawnTarget.pos());
             }
 
             World overworld = playerComponent.player.getWorld().getServer().getWorld(World.OVERWORLD);

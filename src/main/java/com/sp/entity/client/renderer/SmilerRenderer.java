@@ -20,9 +20,9 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
 public class SmilerRenderer extends MobEntityRenderer<SmilerEntity, SmilerModel<SmilerEntity>> {
-    private static final Identifier defaultTexture = new Identifier(SPBRevamped.MOD_ID, "textures/entity/smiler/smiler.png");
-    private static final Identifier texture1 = new Identifier(SPBRevamped.MOD_ID, "textures/entity/smiler/smiler1.png");
-    private static final Identifier texture2 = new Identifier(SPBRevamped.MOD_ID, "textures/entity/smiler/smiler2.png");
+    private static final Identifier defaultTexture = Identifier.of(SPBRevamped.MOD_ID, "textures/entity/smiler/smiler.png");
+    private static final Identifier texture1 = Identifier.of(SPBRevamped.MOD_ID, "textures/entity/smiler/smiler1.png");
+    private static final Identifier texture2 = Identifier.of(SPBRevamped.MOD_ID, "textures/entity/smiler/smiler2.png");
 
     public SmilerRenderer(EntityRendererFactory.Context context) {
         super(context, new SmilerModel<>(context.getPart(ModModelLayers.SMILER)), 0);

@@ -1,5 +1,6 @@
 package com.sp.world.generation.chunk_generator;
 
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.sp.SPBRevamped;
@@ -23,7 +24,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import java.util.Optional;
 
 public final class Level2ChunkGenerator extends BackroomsChunkGenerator {
-    public static final Codec<Level2ChunkGenerator> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<Level2ChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                             BiomeSource.CODEC.fieldOf("biome_source").forGetter(generator -> generator.biomeSource),
                             ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(generator -> generator.settings)
@@ -57,7 +58,7 @@ public final class Level2ChunkGenerator extends BackroomsChunkGenerator {
 
 
         if(chunk.getPos().x == 0 && chunk.getPos().z == 0 ){
-            roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level2/stairwell2_2");
+            roomIdentifier = Identifier.of(SPBRevamped.MOD_ID, "level2/stairwell2_2");
             optional = structureTemplateManager.getTemplate(roomIdentifier);
 
             optional.ifPresent(structureTemplate -> structureTemplate.place(
@@ -95,15 +96,15 @@ public final class Level2ChunkGenerator extends BackroomsChunkGenerator {
         Identifier identifier;
 
         if(dark){
-            identifier = new Identifier(SPBRevamped.MOD_ID, "level2/dark_room" + roomNumber);
+            identifier = Identifier.of(SPBRevamped.MOD_ID, "level2/dark_room" + roomNumber);
         }else{
-            identifier = new Identifier(SPBRevamped.MOD_ID, "level2/room" + roomNumber);
+            identifier = Identifier.of(SPBRevamped.MOD_ID, "level2/room" + roomNumber);
         }
         return identifier;
     }
 
 
-    protected Codec<? extends ChunkGenerator> getCodec() {
+    protected MapCodec<? extends ChunkGenerator> getCodec() {
         return CODEC;
     }
 

@@ -1,5 +1,6 @@
 package com.sp.render.gui;
 
+import net.minecraft.client.render.RenderTickCounter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.sp.SPBRevampedClient;
 import com.sp.render.camera.CutsceneManager;
@@ -14,7 +15,7 @@ public class TitleText implements HudRenderCallback {
     }
 
     @Override
-    public void onHudRender(DrawContext drawContext, float tickDelta) {
+    public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
         CutsceneManager cutsceneManager = SPBRevampedClient.getCutsceneManager();
 
         if(cutsceneManager.backroomsBySP && !cutsceneManager.blackScreen.isBlackScreen){

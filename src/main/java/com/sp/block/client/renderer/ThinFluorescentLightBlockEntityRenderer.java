@@ -8,7 +8,7 @@ import com.sp.compat.modmenu.ConfigStuff;
 import com.sp.render.RenderLayers;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -24,7 +24,7 @@ import org.joml.Matrix4f;
 import static net.minecraft.util.math.Direction.WEST;
 
 public class ThinFluorescentLightBlockEntityRenderer implements BlockEntityRenderer<ThinFluorescentLightBlockEntity> {
-    private static final Identifier SHADER = new Identifier(SPBRevamped.MOD_ID, "light/fluorescent_light");
+    private static final Identifier SHADER = Identifier.of(SPBRevamped.MOD_ID, "light/fluorescent_light");
 
 
     public ThinFluorescentLightBlockEntityRenderer(BlockEntityRendererFactory.Context context){
@@ -44,23 +44,23 @@ public class ThinFluorescentLightBlockEntityRenderer implements BlockEntityRende
         }
 
         if(client.world != null) {
-            shader.setFloat("warAngle", SPBRevampedClient.getWarpTimer(client.world));
+            shader.getUniformSafe("warAngle").setFloat(SPBRevampedClient.getWarpTimer(client.world));
         }
 
         //don't render if blackout is active
         if(blackout || !on) return;
 
         Direction facing = entity.getCurrentState().get(ThinFluorescentLightBlock.FACING);
-        WallMountLocation wall = entity.getCurrentState().get(ThinFluorescentLightBlock.FACE);
+        BlockFace wall = entity.getCurrentState().get(ThinFluorescentLightBlock.FACE);
 
         matrices.translate(0.5, 0.5, 0.5);
-        if(wall == WallMountLocation.CEILING) {
+        if(wall == BlockFace.CEILING) {
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(facing.getOpposite().asRotation()));
         }
-        if(wall == WallMountLocation.WALL){
+        if(wall == BlockFace.WALL){
             matrices.multiply(facing.getOpposite().getRotationQuaternion());
         }
-        if(wall == WallMountLocation.FLOOR){
+        if(wall == BlockFace.FLOOR){
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(facing.asRotation()));
         }
@@ -83,10 +83,10 @@ public class ThinFluorescentLightBlockEntityRenderer implements BlockEntityRende
     }
 
     private void renderFace(ThinFluorescentLightBlockEntity entity, Matrix4f matrix, VertexConsumer buffer, float f, float g, float h, float i, float j, float k, float l, float m, Direction direction) {
-            buffer.vertex(matrix, f, h, j).next();
-            buffer.vertex(matrix, g, h, k).next();
-            buffer.vertex(matrix, g, i, l).next();
-            buffer.vertex(matrix, f, i, m).next();
+            buffer.vertex(matrix, f, h, j);
+            buffer.vertex(matrix, g, h, k);
+            buffer.vertex(matrix, g, i, l);
+            buffer.vertex(matrix, f, i, m);
     }
 
     protected RenderLayer getLayer() {

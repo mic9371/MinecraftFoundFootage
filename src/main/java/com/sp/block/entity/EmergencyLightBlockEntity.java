@@ -1,11 +1,12 @@
 package com.sp.block.entity;
 
+import com.sp.render.deferred.DeferredRenderer;
 import com.sp.clientWrapper.ClientWrapper;
 import com.sp.init.ModBlockEntities;
 import com.sp.sounds.EmergencyAlarmSoundInstance;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.light.AreaLight;
-import foundry.veil.api.client.render.deferred.light.PointLight;
+import com.sp.render.deferred.light.AreaLight;
+import com.sp.render.deferred.light.PointLight;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
@@ -55,11 +56,11 @@ public class EmergencyLightBlockEntity extends BlockEntity {
 
     public void removeEmergencyLights() {
         if (this.initEmergencyLights && this.world.isClient) {
-            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.areaLight1);
+            DeferredRenderer.get().getLightRenderer().removeLight(this.areaLight1);
             this.areaLight1 = null;
-            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.areaLight2);
+            DeferredRenderer.get().getLightRenderer().removeLight(this.areaLight2);
             this.areaLight2 = null;
-            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.pointLight);
+            DeferredRenderer.get().getLightRenderer().removeLight(this.pointLight);
             this.pointLight = null;
             this.initEmergencyLights = false;
         }
@@ -67,7 +68,7 @@ public class EmergencyLightBlockEntity extends BlockEntity {
 
     public void removeNormalLights() {
         if(this.initNormalLights && this.world.isClient) {
-            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.pointLight);
+            DeferredRenderer.get().getLightRenderer().removeLight(this.pointLight);
             this.pointLight = null;
             this.initNormalLights = false;
         }

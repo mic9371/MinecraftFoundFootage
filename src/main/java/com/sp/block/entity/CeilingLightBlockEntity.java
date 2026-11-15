@@ -1,8 +1,9 @@
 package com.sp.block.entity;
 
+import com.sp.render.deferred.DeferredRenderer;
 import com.sp.init.ModBlockEntities;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.light.AreaLight;
+import com.sp.render.deferred.light.AreaLight;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +31,7 @@ public class CeilingLightBlockEntity extends BlockEntity {
     @Override
     public void markRemoved() {
         if (this.light != null && world.isClient) {
-            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.light);
+            DeferredRenderer.get().getLightRenderer().removeLight(this.light);
             this.light = null;
         }
         super.markRemoved();
@@ -50,7 +51,7 @@ public class CeilingLightBlockEntity extends BlockEntity {
         this.angle = 60.4f;
         this.light = new AreaLight();
 
-        VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(this.light
+        DeferredRenderer.get().getLightRenderer().addLight(this.light
                 .setBrightness(this.brightness)
                 .setSize(0.9, 0.0)
                 .setAngle((float) Math.toRadians(this.angle))
@@ -67,7 +68,7 @@ public class CeilingLightBlockEntity extends BlockEntity {
 //                    this.brightness = 2.58f;
 //                    this.angle = 60.4f;
 //                    this.light = new AreaLight();
-//                    VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(this.light
+//                    DeferredRenderer.get().getLightRenderer().addLight(this.light
 //                            .setBrightness(this.brightness)
 //                            .setSize(0.9, 0.0)
 //                            .setAngle((float) Math.toRadians(this.angle))

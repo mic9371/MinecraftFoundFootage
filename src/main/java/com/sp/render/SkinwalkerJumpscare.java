@@ -30,17 +30,17 @@ public class SkinwalkerJumpscare {
 
         ExtraUtils.stopAllOtherSounds(jumpScareSound.getId(), client.getSoundManager().soundSystem);
         client.options.hudHidden = true;
-        program.setInt("Jumpscare", 1);
+        program.getUniformSafe("Jumpscare").setInt(1);
 
         long currentTime = (System.currentTimeMillis() - startTime);
 
         if(currentTime >= 2000 && currentTime < 12000) {
-            program.setInt("CreepyFace1", 1);
+            program.getUniformSafe("CreepyFace1").setInt(1);
         }
 
         if(currentTime >= 12000) {
-            program.setInt("CreepyFace2", 1);
-            program.setVector("Rand",  random.nextFloat(), random2.nextFloat());
+            program.getUniformSafe("CreepyFace2").setInt(1);
+            program.getUniformSafe("Rand").setVector(random.nextFloat(), random2.nextFloat());
         }
 
         if(currentTime >= 14000) {
@@ -51,10 +51,10 @@ public class SkinwalkerJumpscare {
 
             SPBRevampedClient.sendComponentSyncPacket(component.isBeingCaptured(), "beingCaptured");
 
-            program.setInt("Jumpscare", 0);
-            program.setInt("CreepyFace1", 0);
-            program.setInt("CreepyFace2", 0);
-            program.setVector("Rand", 0, 0);
+            program.getUniformSafe("Jumpscare").setInt(0);
+            program.getUniformSafe("CreepyFace1").setInt(0);
+            program.getUniformSafe("CreepyFace2").setInt(0);
+            program.getUniformSafe("Rand").setVector(0, 0);
         }
 
     }

@@ -14,13 +14,13 @@ import java.util.function.Function;
 
 public class RenderLayers extends RenderLayer {
 
-    public static final Identifier NORMAL_ATLAS_TEXTURE = new Identifier(SPBRevamped.MOD_ID, "textures/atlas/normal.png");
-    public static final Identifier HEIGHT_ATLAS_TEXTURE = new Identifier(SPBRevamped.MOD_ID, "textures/atlas/height.png");
+    public static final Identifier NORMAL_ATLAS_TEXTURE = Identifier.of(SPBRevamped.MOD_ID, "textures/atlas/normal.png");
+    public static final Identifier HEIGHT_ATLAS_TEXTURE = Identifier.of(SPBRevamped.MOD_ID, "textures/atlas/height.png");
 
-    private static final RenderPhase.ShaderProgram LIGHT_SHADER = VeilRenderBridge.shaderState(new Identifier(SPBRevamped.MOD_ID, "light/fluorescent_light"));
-    private static final RenderPhase.ShaderProgram DISTORTED_ENTITY_SHADER = VeilRenderBridge.shaderState(new Identifier(SPBRevamped.MOD_ID, "distorted_entity"));
-    private static final RenderPhase.ShaderProgram POOLROOMS_SKY_SHADER = VeilRenderBridge.shaderState(new Identifier(SPBRevamped.MOD_ID, "sky"));
-    private static final RenderPhase.ShaderProgram PBR_SHADER = VeilRenderBridge.shaderState(new Identifier(SPBRevamped.MOD_ID, "pbr/pbr"));
+    private static final RenderPhase.ShaderProgram LIGHT_SHADER = VeilRenderBridge.shaderState(Identifier.of(SPBRevamped.MOD_ID, "light/fluorescent_light"));
+    private static final RenderPhase.ShaderProgram DISTORTED_ENTITY_SHADER = VeilRenderBridge.shaderState(Identifier.of(SPBRevamped.MOD_ID, "distorted_entity"));
+    private static final RenderPhase.ShaderProgram POOLROOMS_SKY_SHADER = VeilRenderBridge.shaderState(Identifier.of(SPBRevamped.MOD_ID, "sky"));
+    private static final RenderPhase.ShaderProgram PBR_SHADER = VeilRenderBridge.shaderState(Identifier.of(SPBRevamped.MOD_ID, "pbr/pbr"));
 
     private static final RenderLayer PBR_LAYER = RenderLayer.of(
             "pbr",

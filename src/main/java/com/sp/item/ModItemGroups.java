@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 public class ModItemGroups {
     public static final ItemGroup BACKROOMS_GROUP = Registry.register(Registries.ITEM_GROUP,
-            new Identifier(SPBRevamped.MOD_ID, "spbrevamped"),
+            Identifier.of(SPBRevamped.MOD_ID, "spbrevamped"),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.spbrevamped"))
                     .icon(() -> new ItemStack(ModBlocks.WALL_BLOCK)).entries((displayContext, entries) -> {
                         entries.add(ModBlocks.VOID_BLOCK);

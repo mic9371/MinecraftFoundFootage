@@ -1,10 +1,11 @@
 package com.sp.mixin.hudandresolution;
 
+import net.minecraft.client.render.RenderTickCounter;
 import com.sp.SPBRevampedClient;
 import com.sp.compat.modmenu.ConfigStuff;
 import com.sp.util.TickTimer;
 import com.sp.util.Timer;
-import foundry.veil.api.client.util.Easings;
+import foundry.veil.api.client.util.Easing;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -24,17 +25,13 @@ public class InGameHudMixin {
 
     @Shadow @Final private MinecraftClient client;
 
-    @Shadow private int scaledHeight;
-
-    @Shadow @Final private static Identifier ICONS;
-
-    @Unique Timer hotbarSlideTimer = new Timer(500, Easings.Easing.easeInCirc, Easings.Easing.easeOutCirc);
+    @Unique Timer hotbarSlideTimer = new Timer(500, Easing.EASE_IN_CIRC, Easing.EASE_OUT_CIRC);
     @Unique TickTimer hotbarHoldTimer = new TickTimer();
     @Unique Integer prevSelectedSlot = 0;
     @Unique double hotbarPosition;
 
     @Inject(method = {"renderHotbar"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", shift = At.Shift.AFTER))
-    private void hotbarSlide1(float tickDelta, DrawContext context, CallbackInfo ci){
+    private void hotbarSlide1(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci){
         if (SPBRevampedClient.shouldRenderCameraEffect()) {
             this.hotbarPosition = 45 * hotbarSlideTimer.getCurrentTime();
             if (!ConfigStuff.useDefaultGUI) {
@@ -61,14 +58,14 @@ public class InGameHudMixin {
     }
 
     @Inject(method = {"renderHotbarItem"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V", ordinal = 1, shift = At.Shift.AFTER))
-    private void itemCountFix(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci){
+    private void itemCountFix(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci){
         if (!ConfigStuff.useDefaultGUI) {
             context.getMatrices().translate(0, this.hotbarPosition, 0);
         }
     }
 
     @Inject(method = {"renderHotbarItem"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;III)V"))
-    private void hotbarSlide2(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci){
+    private void hotbarSlide2(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci){
         if (SPBRevampedClient.shouldRenderCameraEffect()) {
             context.getMatrices().push();
 
@@ -79,7 +76,7 @@ public class InGameHudMixin {
     }
 
     @Inject(method = {"renderHotbarItem"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V", shift = At.Shift.AFTER))
-    private void hotbarSlide3(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
+    private void hotbarSlide3(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
         if (SPBRevampedClient.shouldRenderCameraEffect()) {
             context.getMatrices().pop();
         }

@@ -1,5 +1,6 @@
 package com.sp.render.gui;
 
+import net.minecraft.client.render.RenderTickCounter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.sp.SPBRevamped;
 import com.sp.cca_stuff.InitializeComponents;
@@ -14,13 +15,13 @@ import net.minecraft.util.Util;
 import static net.minecraft.util.math.MathHelper.floor;
 
 public class StaminaBar implements HudRenderCallback {
-    private static final Identifier STAMINA_ICONS = new Identifier(SPBRevamped.MOD_ID, "textures/gui/stamina.png");
+    private static final Identifier STAMINA_ICONS = Identifier.of(SPBRevamped.MOD_ID, "textures/gui/stamina.png");
     private Long fadeStart;
     private float fadeTimer;
 
 
     @Override
-    public void onHudRender(DrawContext drawContext, float tickDelta) {
+    public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
         PlayerEntity player = client.player;
 

@@ -7,5 +7,5 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 
 public class ModBiomes {
-    public static final RegistryKey<Biome> BASE_BACKROOMS_BIOME = RegistryKey.of(RegistryKeys.BIOME, new Identifier(SPBRevamped.MOD_ID, "base_backrooms_biome"));
+    public static final RegistryKey<Biome> BASE_BACKROOMS_BIOME = RegistryKey.of(RegistryKeys.BIOME, Identifier.of(SPBRevamped.MOD_ID, "base_backrooms_biome"));
 }

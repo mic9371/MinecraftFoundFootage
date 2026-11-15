@@ -1,10 +1,13 @@
 #version 460
+// Declared here because Veil 1.21.1 drops #veil:buffer directives reached through #include
+#veil:buffer veil:camera VeilCamera
 #include veil:camera
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec3 Normal;
 
-layout (std430, binding = 0) buffer MyBuffer {
+// Storage block bindings are set from Java: Veil 1.21.1 fails to process "binding" layout qualifiers
+layout (std430) buffer MyBuffer {
     vec3 position[];
 } myBuffer;
 

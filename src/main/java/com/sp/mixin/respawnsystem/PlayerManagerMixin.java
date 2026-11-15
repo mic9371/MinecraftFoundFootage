@@ -1,8 +1,7 @@
 package com.sp.mixin.respawnsystem;
 
 import com.sp.init.BackroomsLevels;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -10,7 +9,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.TeleportTarget;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,13 +17,15 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.Optional;
 
+/**
+ * When a player dies inside a Backrooms level they respawn in that same level at their last death position
+ * (or the level's origin if they died below y=0), keeping their rotation, and their spawn point is moved there.
+ */
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
 
@@ -33,76 +34,50 @@ public class PlayerManagerMixin {
     @Unique ServerPlayerEntity targetPlayer;
 
     @Inject(method = "respawnPlayer", at = @At("HEAD"))
-    private void setTargetPlayer(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> cir){
+    private void setTargetPlayer(ServerPlayerEntity player, boolean alive, Entity.RemovalReason removalReason, CallbackInfoReturnable<ServerPlayerEntity> cir) {
         this.targetPlayer = player;
     }
 
-    @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getSpawnPointPosition()Lnet/minecraft/util/math/BlockPos;"))
-    private BlockPos setSpawnPointPos(ServerPlayerEntity instance){
-        if(BackroomsLevels.isInBackrooms(targetPlayer.getWorld().getRegistryKey())) {
-            return targetPlayer.getLastDeathPos().isPresent() ? targetPlayer.getLastDeathPos().get().getPos() : instance.getSpawnPointPosition();
-        }
-        return instance.getSpawnPointPosition();
-    }
-
-
-    @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getWorld(Lnet/minecraft/registry/RegistryKey;)Lnet/minecraft/server/world/ServerWorld;"))
-    private @Nullable ServerWorld getCurrentWorld(MinecraftServer instance, RegistryKey<World> key){
-        if(BackroomsLevels.isInBackrooms(targetPlayer.getWorld().getRegistryKey())) {
-            return instance.getWorld(targetPlayer.getWorld().getRegistryKey());
+    @Unique
+    private @Nullable BlockPos getBackroomsRespawnPos() {
+        if (!BackroomsLevels.isInBackrooms(targetPlayer.getWorld().getRegistryKey())) {
+            return null;
         }
 
-        return instance.getWorld(key);
-    }
-
-
-
-    @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;findRespawnPosition(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;FZZ)Ljava/util/Optional;"))
-    private Optional<Vec3d> respawn(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive){
-        if(BackroomsLevels.isInBackrooms(targetPlayer.getWorld().getRegistryKey())) {
-            if (targetPlayer.getLastDeathPos().isPresent()) {
-                Vec3d lastDeathPos = targetPlayer.getLastDeathPos().get().getPos().toCenterPos();
-                if(lastDeathPos.y < 0){
-                    return Optional.of(BlockPos.ofFloored(BackroomsLevels.getCurrentLevelsOrigin(world.getRegistryKey())).toCenterPos());
-                }
-                return Optional.of(targetPlayer.getLastDeathPos().get().getPos().toCenterPos());
-            }
+        Optional<GlobalPos> lastDeathPos = targetPlayer.getLastDeathPos();
+        if (lastDeathPos.isEmpty()) {
+            return null;
         }
-        return PlayerEntity.findRespawnPosition(world, pos, angle, forced, alive);
-    }
 
-
-    @ModifyArgs(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;refreshPositionAndAngles(DDDFF)V"))
-    private void setSpawnAngle(Args args){
-        if(BackroomsLevels.isInBackrooms(targetPlayer.getWorld().getRegistryKey())) {
-            args.set(3, targetPlayer.getYaw());
-            args.set(4, targetPlayer.getPitch());
+        BlockPos pos = lastDeathPos.get().pos();
+        if (pos.getY() < 0) {
+            pos = BlockPos.ofFloored(BackroomsLevels.getCurrentLevelsOrigin(targetPlayer.getWorld().getRegistryKey()));
         }
+        return pos;
     }
 
+    @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getRespawnTarget(ZLnet/minecraft/world/TeleportTarget$PostDimensionTransition;)Lnet/minecraft/world/TeleportTarget;"))
+    private TeleportTarget getBackroomsRespawnTarget(ServerPlayerEntity instance, boolean alive, TeleportTarget.PostDimensionTransition postDimensionTransition) {
+        BlockPos respawnPos = getBackroomsRespawnPos();
+        ServerWorld currentWorld = this.server.getWorld(targetPlayer.getWorld().getRegistryKey());
 
-    @ModifyArgs(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;setSpawnPoint(Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/util/math/BlockPos;FZZ)V"))
-    private void respawn2(Args args){
-        if(BackroomsLevels.isInBackrooms(targetPlayer.getWorld().getRegistryKey())) {
-            ServerWorld currentWorld = this.server.getWorld(targetPlayer.getWorld().getRegistryKey());
-            Optional<GlobalPos> lastDeathPos = targetPlayer.getLastDeathPos();
+        if (respawnPos != null && currentWorld != null) {
+            Vec3d pos = respawnPos.toCenterPos();
+            return new TeleportTarget(currentWorld, pos, Vec3d.ZERO, targetPlayer.getYaw(), targetPlayer.getPitch(), postDimensionTransition);
+        }
 
-            if (currentWorld != null) {
-                if (lastDeathPos.isPresent()) {
-                    BlockPos pos = lastDeathPos.get().getPos();
+        return instance.getRespawnTarget(alive, postDimensionTransition);
+    }
 
-                    if (pos.getY() < 0){
-                        pos = BlockPos.ofFloored(BackroomsLevels.getCurrentLevelsOrigin(currentWorld.getRegistryKey()));
-                    }
+    @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;setSpawnPointFrom(Lnet/minecraft/server/network/ServerPlayerEntity;)V"))
+    private void setBackroomsSpawnPoint(ServerPlayerEntity newPlayer, ServerPlayerEntity oldPlayer) {
+        newPlayer.setSpawnPointFrom(oldPlayer);
 
-                    args.set(0, currentWorld.getRegistryKey());
-                    args.set(1, pos);
-                    args.set(2, args.get(2));
-                    args.set(3, args.get(3));
-                    args.set(4, args.get(4));
-                }
-            }
+        BlockPos respawnPos = getBackroomsRespawnPos();
+        ServerWorld currentWorld = this.server.getWorld(targetPlayer.getWorld().getRegistryKey());
+
+        if (respawnPos != null && currentWorld != null) {
+            newPlayer.setSpawnPoint(currentWorld.getRegistryKey(), respawnPos, oldPlayer.getSpawnAngle(), oldPlayer.isSpawnForced(), false);
         }
     }
-
 }

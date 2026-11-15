@@ -5,7 +5,7 @@ import com.sp.cca_stuff.PlayerComponent;
 import com.sp.util.Timer;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
-import foundry.veil.api.client.util.Easings;
+import foundry.veil.api.client.util.Easing;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -33,7 +33,7 @@ public abstract class LivingEntityRendererMixin <T extends LivingEntity, M exten
 
     @Shadow protected abstract void scale(T entity, MatrixStack matrices, float amount);
     @Unique ShaderProgram shader;
-    @Unique Identifier SHADER_LOCATION = new Identifier("spbrevamped", "warp_player");
+    @Unique Identifier SHADER_LOCATION = Identifier.of("spbrevamped", "warp_player");
 
     protected LivingEntityRendererMixin(EntityRendererFactory.Context ctx) {
         super(ctx);
@@ -51,32 +51,32 @@ public abstract class LivingEntityRendererMixin <T extends LivingEntity, M exten
 
             if(playerComponent.isShouldDoStatic()) {
                 if (this.staticTimer == null) {
-                    this.staticTimer = new Timer(2000, Easings.Easing.linear);
+                    this.staticTimer = new Timer(2000, Easing.LINEAR);
                     this.staticTimer.startTimer();
                 }
 
                 if(this.staticTimer.isDone()){
                     this.staticTimer = null;
-                    shader.setFloat("StaticTimer", 2.0f);
+                    shader.getUniformSafe("StaticTimer").setFloat(2.0f);
                 } else {
-                    shader.setFloat("StaticTimer", this.staticTimer.getCurrentTime());
+                    shader.getUniformSafe("StaticTimer").setFloat(this.staticTimer.getCurrentTime());
                 }
 
             } else {
-                shader.setFloat("StaticTimer", 2.0f);
+                shader.getUniformSafe("StaticTimer").setFloat(2.0f);
             }
 
         }
     }
 
-    @Inject(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V", shift = At.Shift.BEFORE))
+    @Inject(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;III)V", shift = At.Shift.BEFORE))
     private void bind(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci){
         if (livingEntity instanceof AbstractClientPlayerEntity){
             shader.bind();
         }
     }
 
-    @Inject(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V", shift = At.Shift.AFTER))
+    @Inject(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;III)V", shift = At.Shift.AFTER))
     private void unbind(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci){
         if(livingEntity instanceof AbstractClientPlayerEntity){
             ShaderProgram.unbind();

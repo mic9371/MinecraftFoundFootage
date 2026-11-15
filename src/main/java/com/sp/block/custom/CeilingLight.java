@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import com.sp.block.entity.CeilingLightBlockEntity;
 import com.sp.init.ModBlockEntities;
 import net.minecraft.block.Block;
@@ -16,6 +17,13 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class CeilingLight extends BlockWithEntity {
+    public static final MapCodec<CeilingLight> CODEC = createCodec(CeilingLight::new);
+
+    @Override
+    protected MapCodec<? extends CeilingLight> getCodec() {
+        return CODEC;
+    }
+
     public static final BooleanProperty STOPPED = BooleanProperty.of("stopped");
 
     public CeilingLight(Settings settings) {
@@ -31,7 +39,7 @@ public class CeilingLight extends BlockWithEntity {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, ModBlockEntities.CEILING_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world, pos, state));
+        return validateTicker(type, ModBlockEntities.CEILING_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world, pos, state));
     }
 
     @Override

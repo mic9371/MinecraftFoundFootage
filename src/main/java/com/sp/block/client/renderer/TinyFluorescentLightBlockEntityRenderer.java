@@ -8,7 +8,7 @@ import com.sp.compat.modmenu.ConfigStuff;
 import com.sp.render.RenderLayers;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -24,7 +24,7 @@ import org.joml.Matrix4f;
 import static net.minecraft.util.math.Direction.WEST;
 
 public class TinyFluorescentLightBlockEntityRenderer implements BlockEntityRenderer<TinyFluorescentLightBlockEntity> {
-    private static final Identifier SHADER = new Identifier(SPBRevamped.MOD_ID, "light/fluorescent_light");
+    private static final Identifier SHADER = Identifier.of(SPBRevamped.MOD_ID, "light/fluorescent_light");
 
 
     public TinyFluorescentLightBlockEntityRenderer(BlockEntityRendererFactory.Context context){
@@ -44,7 +44,7 @@ public class TinyFluorescentLightBlockEntityRenderer implements BlockEntityRende
         }
 
         if(client.world != null) {
-            shader.setFloat("warAngle", SPBRevampedClient.getWarpTimer(client.world));
+            shader.getUniformSafe("warAngle").setFloat(SPBRevampedClient.getWarpTimer(client.world));
         }
 
         //don't render if blackout is active
@@ -69,10 +69,10 @@ public class TinyFluorescentLightBlockEntityRenderer implements BlockEntityRende
     }
 
     private void renderFace(TinyFluorescentLightBlockEntity entity, Matrix4f matrix, VertexConsumer buffer, float x, float x2, float y, float y2, float z, float z2, float z3, float z4, Direction direction) {
-            buffer.vertex(matrix, x, y, z).next();
-            buffer.vertex(matrix, x2, y, z2).next();
-            buffer.vertex(matrix, x2, y2, z3).next();
-            buffer.vertex(matrix, x, y2, z4).next();
+            buffer.vertex(matrix, x, y, z);
+            buffer.vertex(matrix, x2, y, z2);
+            buffer.vertex(matrix, x2, y2, z3);
+            buffer.vertex(matrix, x, y2, z4);
     }
 
     protected RenderLayer getLayer() {

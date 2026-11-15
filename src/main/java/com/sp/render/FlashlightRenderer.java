@@ -1,9 +1,10 @@
 package com.sp.render;
 
+import com.sp.render.deferred.DeferredRenderer;
 import com.sp.cca_stuff.InitializeComponents;
 import com.sp.cca_stuff.PlayerComponent;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.light.AreaLight;
+import com.sp.render.deferred.light.AreaLight;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -40,14 +41,14 @@ public class FlashlightRenderer {
                             AreaLight areaLight = new AreaLight();
                             AreaLight areaLight2 = new AreaLight();
                             Quaternionf orientation = new Quaternionf().rotateXYZ((float) -Math.toRadians(player.getPitch(partialTicks)), (float) Math.toRadians(player.getYaw(partialTicks)), 0.0f);
-                            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(areaLight
+                            DeferredRenderer.get().getLightRenderer().addLight(areaLight
                                     .setBrightness(1f)
                                     .setDistance(25f)
                                     .setSize(0, 0)
                                     .setPosition(playerPos.getX(), playerPos.getY(), playerPos.getZ())
                                     .setOrientation(orientation)
                             );
-                            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(areaLight2
+                            DeferredRenderer.get().getLightRenderer().addLight(areaLight2
                                     .setBrightness(1f)
                                     .setAngle(0.25f)
                                     .setDistance(25f)
@@ -65,7 +66,7 @@ public class FlashlightRenderer {
                             for(AreaLight areaLights : areaLightList) {
                                 Quaternionf currentRot = new Quaternionf().rotateXYZ((float) -Math.toRadians(player.getPitch(partialTicks)), (float) Math.toRadians(player.getYaw(partialTicks)), 0.0f);
                                 //*Fix for replay mod
-                                float alpha = client.player.isSpectator() ? 1.0f : 0.7f * client.getLastFrameDuration();
+                                float alpha = client.player.isSpectator() ? 1.0f : 0.7f * client.getRenderTickCounter().getLastFrameDuration();
                                 areaLights.getOrientation().slerp(currentRot, alpha);
                                 areaLights.setPosition(playerPos.getX(), playerPos.getY(), playerPos.getZ());
                             }
@@ -82,7 +83,7 @@ public class FlashlightRenderer {
         if (flashLightList2.containsKey(player) && flashLightList2.get(player) != null) {
             ArrayList<AreaLight> areaLightList = flashLightList2.get(player);
             for(AreaLight areaLights : areaLightList){
-                VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(areaLights);
+                DeferredRenderer.get().getLightRenderer().removeLight(areaLights);
             }
             flashLightList2.remove(player);
         }

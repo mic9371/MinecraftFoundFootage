@@ -1,0 +1,35 @@
+{
+  "vertex": "veil:blit_screen",
+  "fragment": "spb-revamped:deferred/core/composite",
+  "textures": {
+    "DeferredSampler": {
+      "type": "framebuffer",
+      "name": "veil:opaque_final"
+    },
+    "DeferredDepthSampler": {
+      "type": "framebuffer",
+      "name": "veil:opaque_final:depth"
+    },
+    "MainSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main"
+    },
+    "MainDepthSampler": {
+      "type": "framebuffer",
+      "name": "minecraft:main:depth"
+    },
+    "TransparentSampler": {
+      "type": "framebuffer",
+      "name": "veil:transparent_final"
+    },
+    "TransparentMaterialSampler": {
+      "type": "framebuffer",
+      "name": "veil:transparent",
+      "sampler": 3
+    },
+    "TransparentDepthSampler": {
+      "type": "framebuffer",
+      "name": "veil:transparent_final:depth"
+    }
+  }
+}

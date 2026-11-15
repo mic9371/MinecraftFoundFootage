@@ -1,12 +1,13 @@
 package com.sp.block.entity;
 
+import com.sp.render.deferred.DeferredRenderer;
 import com.sp.block.custom.FluorescentLightBlock;
 import com.sp.init.BackroomsLevels;
 import com.sp.init.ModBlockEntities;
 import com.sp.init.ModBlocks;
 import com.sp.world.levels.BackroomsLevelWithLights;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.light.PointLight;
+import com.sp.render.deferred.light.PointLight;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -52,7 +53,7 @@ public class FluorescentLightBlockEntity extends BlockEntity {
             return;
         }
 
-        VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(this.pointLight);
+        DeferredRenderer.get().getLightRenderer().removeLight(this.pointLight);
         this.pointLight = null;
     }
 

@@ -44,8 +44,8 @@ public class NoRainParticlesWorldRendererMixin {
         original.call(instance, parameters, (Object) x, (Object) y, (Object) z, (Object) velocityX, (Object) velocityY, (Object) velocityZ);
     }
 
-    @WrapOperation(method = "renderWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferBuilder;vertex(DDD)Lnet/minecraft/client/render/VertexConsumer;", ordinal = 0))
-    private VertexConsumer spbrevamped$noRainRenderInLevel3241(BufferBuilder instance, double x, double y, double z, Operation<VertexConsumer> original) {
+    @WrapOperation(method = "renderWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferBuilder;vertex(FFF)Lnet/minecraft/client/render/VertexConsumer;", ordinal = 0))
+    private VertexConsumer spbrevamped$noRainRenderInLevel3241(BufferBuilder instance, float x, float y, float z, Operation<VertexConsumer> original) {
         if (SPBRevampedClient.isInLevel(BackroomsLevels.LEVEL324_BACKROOMS_LEVEL)) {
             return original.call(instance, (Object) (x + ((RAIN_TILT) / 2) /* * rainDelta */), (Object) (y), (Object) (z + RAIN_TILT /** -rainDelta*/));
         }
@@ -53,8 +53,8 @@ public class NoRainParticlesWorldRendererMixin {
         return original.call(instance, (Object) x, (Object) y, (Object) z);
     }
 
-    @WrapOperation(method = "renderWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferBuilder;vertex(DDD)Lnet/minecraft/client/render/VertexConsumer;", ordinal = 1))
-    private VertexConsumer spbrevamped$noRainRenderInLevel3242(BufferBuilder instance, double x, double y, double z, Operation<VertexConsumer> original) {
+    @WrapOperation(method = "renderWeather", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferBuilder;vertex(FFF)Lnet/minecraft/client/render/VertexConsumer;", ordinal = 1))
+    private VertexConsumer spbrevamped$noRainRenderInLevel3242(BufferBuilder instance, float x, float y, float z, Operation<VertexConsumer> original) {
         if (SPBRevampedClient.isInLevel(BackroomsLevels.LEVEL324_BACKROOMS_LEVEL)) {
             return original.call(instance, (Object) (x + ((RAIN_TILT) / 2) /* * rainDelta */), (Object) (y), (Object) (z + RAIN_TILT /** -rainDelta*/));
         }

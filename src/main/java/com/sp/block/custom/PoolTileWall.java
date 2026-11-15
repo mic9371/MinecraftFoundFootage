@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -16,6 +17,13 @@ import net.minecraft.world.BlockView;
 
 @SuppressWarnings("deprecation")
 public class PoolTileWall extends HorizontalFacingBlock {
+    public static final MapCodec<PoolTileWall> CODEC = createCodec(PoolTileWall::new);
+
+    @Override
+    protected MapCodec<? extends PoolTileWall> getCodec() {
+        return CODEC;
+    }
+
     public static final IntProperty TYPE = IntProperty.of("type", 0, 1);
 
     public PoolTileWall(Settings settings) {

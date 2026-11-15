@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import com.sp.block.entity.WoodenCrateBlockEntity;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -16,12 +17,19 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class WoodenCrate extends BlockWithEntity {
+    public static final MapCodec<WoodenCrate> CODEC = createCodec(WoodenCrate::new);
+
+    @Override
+    protected MapCodec<? extends WoodenCrate> getCodec() {
+        return CODEC;
+    }
+
     public WoodenCrate(Settings settings) {
         super(settings);
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {

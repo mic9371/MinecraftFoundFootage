@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import com.sp.block.entity.DrawingMarkerBlockEntity;
 import com.sp.init.ModBlockEntities;
 import net.minecraft.block.Block;
@@ -22,6 +23,13 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
 public class DrawingMarker extends BlockWithEntity {
+    public static final MapCodec<DrawingMarker> CODEC = createCodec(DrawingMarker::new);
+
+    @Override
+    protected MapCodec<? extends DrawingMarker> getCodec() {
+        return CODEC;
+    }
+
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final BooleanProperty TYPE = BooleanProperty.of("type");
 
@@ -63,7 +71,7 @@ public class DrawingMarker extends BlockWithEntity {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, ModBlockEntities.DRAWING_MARKER_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
+        return validateTicker(type, ModBlockEntities.DRAWING_MARKER_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
     }
 
     @Override

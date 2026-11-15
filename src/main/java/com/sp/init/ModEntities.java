@@ -15,14 +15,14 @@ import net.minecraft.util.Identifier;
 public class ModEntities {
 
     public static final EntityType<SkinWalkerEntity> SKIN_WALKER_ENTITY = Registry.register(Registries.ENTITY_TYPE,
-            new Identifier(SPBRevamped.MOD_ID, "skin_walker"),
+            Identifier.of(SPBRevamped.MOD_ID, "skin_walker"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SkinWalkerEntity::new).dimensions(EntityDimensions.fixed(0.6f, 2.0f)).build());
 
     public static final EntityType<SmilerEntity> SMILER_ENTITY = Registry.register(Registries.ENTITY_TYPE,
-            new Identifier(SPBRevamped.MOD_ID, "smiler"),
+            Identifier.of(SPBRevamped.MOD_ID, "smiler"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SmilerEntity::new).dimensions(EntityDimensions.fixed(0.6f, 2.0f)).build());
 
     public static final EntityType<WalkerEntity> WALKER_ENTITY = Registry.register(Registries.ENTITY_TYPE,
-            new Identifier(SPBRevamped.MOD_ID, "walker"),
+            Identifier.of(SPBRevamped.MOD_ID, "walker"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, WalkerEntity::new).dimensions(EntityDimensions.fixed(2.0f, 2.0f)).build());
 }

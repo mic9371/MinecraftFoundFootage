@@ -1,21 +1,22 @@
 package com.sp.networking.S2C;
 
-import com.sp.SPBRevampedClient;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
+import com.sp.SPBRevamped;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.util.Identifier;
 
-public class InvokeBlackScreenPacket {
+public record InvokeBlackScreenPacket(int duration, boolean shouldPauseSounds, boolean noEscape) implements CustomPayload {
+    public static final CustomPayload.Id<InvokeBlackScreenPacket> ID = new CustomPayload.Id<>(Identifier.of(SPBRevamped.MOD_ID, "blk_screen"));
+    public static final PacketCodec<RegistryByteBuf, InvokeBlackScreenPacket> CODEC = PacketCodec.tuple(
+            PacketCodecs.INTEGER, InvokeBlackScreenPacket::duration,
+            PacketCodecs.BOOL, InvokeBlackScreenPacket::shouldPauseSounds,
+            PacketCodecs.BOOL, InvokeBlackScreenPacket::noEscape,
+            InvokeBlackScreenPacket::new);
 
-    public static void receive(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender){
-        int duration = buf.readInt();
-        boolean shouldPauseSounds = buf.readBoolean();
-        boolean noEscape = buf.readBoolean();
-
-        client.execute(()->{
-            SPBRevampedClient.getCutsceneManager().blackScreen.showBlackScreen(duration, shouldPauseSounds, noEscape);
-        });
+    @Override
+    public Id<? extends CustomPayload> getId() {
+        return ID;
     }
-
 }

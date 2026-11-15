@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.sp.init.BackroomsLevels;
 import com.sp.world.levels.BackroomsLevel;
-import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,8 +37,8 @@ public class LevelCommand {
 
                                 if (entity instanceof PlayerEntity player) {
 
-                                    TeleportTarget target = new TeleportTarget(backroomsLevel.getSpawnPos(), Vec3d.ZERO, 0, 90);
-                                    FabricDimensions.teleport(player, context.getSource().getWorld().getServer().getWorld(backroomsLevel.getWorldKey()), target);
+                                    TeleportTarget target = new TeleportTarget(context.getSource().getWorld().getServer().getWorld(backroomsLevel.getWorldKey()), backroomsLevel.getSpawnPos(), Vec3d.ZERO, 0, 90, TeleportTarget.NO_OP);
+                                    player.teleportTo(target);
                                 }
 
 

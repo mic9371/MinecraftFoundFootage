@@ -1,5 +1,6 @@
 package com.sp.mixin;
 
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.Vec3i;
@@ -15,7 +16,7 @@ public class StructureBlockEntityMixin {
     private Vec3i size;
 
     @Inject(method = "readNbt", at = @At("RETURN"))
-    public void readNbt(NbtCompound nbt, CallbackInfo ci) {
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
         int l = nbt.getInt("sizeX");
         int m = nbt.getInt("sizeY");
         int n = nbt.getInt("sizeZ");

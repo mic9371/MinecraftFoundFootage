@@ -1,3 +1,5 @@
+// Declared here because Veil 1.21.1 drops #veil:buffer directives reached through #include
+#veil:buffer veil:camera VeilCamera
 #include veil:camera
 #include veil:deferred_utils
 #include veil:fog
@@ -9,7 +11,8 @@ layout(location = 1) in vec4 Color;
 layout(location = 2) in vec2 UV0;
 layout(location = 3) in ivec2 UV2;
 layout(location = 4) in vec3 Normal;
-layout(location = 6) in int BlockMaterial1;
+// Material is attribute 5 since 1.20.5 (vertex formats no longer have a padding element before it)
+layout(location = 5) in int BlockMaterial1;
 
 uniform sampler2D Sampler2;
 

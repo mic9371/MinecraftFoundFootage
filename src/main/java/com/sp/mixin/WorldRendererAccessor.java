@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface WorldRendererAccessor {
 
     @Invoker("renderLayer")
-    void invokeRenderLayer(RenderLayer renderLayer, MatrixStack matrices, double cameraX, double cameraY, double cameraZ, Matrix4f positionMatrix);
+    void invokeRenderLayer(RenderLayer renderLayer, double cameraX, double cameraY, double cameraZ, Matrix4f viewMatrix, Matrix4f projectionMatrix);
 
     @Invoker("setupTerrain")
     void invokeSetupTerrain(Camera camera, Frustum frustum, boolean hasForcedFrustum, boolean spectator);

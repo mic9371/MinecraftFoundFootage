@@ -3,16 +3,8 @@
 #extension GL_ARB_shader_storage_buffer_object : enable
 
 #line 0 1
-layout(std140) uniform CameraMatrices {
-    mat4 ProjMat;
-    mat4 IProjMat;
-    mat4 ViewMat;
-    mat4 IViewMat;
-    mat3 IViewRotMat;
-    vec3 CameraPosition;
-    float NearPlane;
-    float FarPlane;
-} VeilCamera;
+// Veil 1.21.1 generates the camera block (its layout changed), so use its directive instead of declaring it by hand
+#veil:buffer veil:camera VeilCamera
 
 #line 4 0
 
@@ -22,11 +14,12 @@ struct BirdData {
 };
 
 
-layout (std430, binding = 0) buffer BirdBuffer {
+// Storage block bindings are set from Java: Veil 1.21.1 fails to process "binding" layout qualifiers
+layout (std430) buffer BirdBuffer {
     BirdData birds[];
 } birdBuffer;
 
-layout (std430, binding = 1) buffer IndirectBuffer {
+layout (std430) buffer IndirectBuffer {
     uint count;
     uint primCount;
     uint firstIndex;
@@ -110,7 +103,7 @@ void main() {
                 totalPosition += other.position;
                 totalRotation += getFixedDirection(vec3(newRotation * abs(smallestDistance - 2)), newRotation);
 
-                otherCount ++;
+                otherCount += 1; // Veil 1.21.1 drops the ";" after a standalone x++
             }
         }
 

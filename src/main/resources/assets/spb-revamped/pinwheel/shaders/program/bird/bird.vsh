@@ -1,4 +1,6 @@
 #version 460
+// Declared here because Veil 1.21.1 drops #veil:buffer directives reached through #include
+#veil:buffer veil:camera VeilCamera
 #include veil:camera
 
 layout(location = 0) in vec3 Position;
@@ -10,7 +12,8 @@ struct BirdData {
     vec3 rotation;
 };
 
-layout (std430, binding = 0) buffer BirdBuffer {
+// Storage block bindings are set from Java: Veil 1.21.1 fails to process "binding" layout qualifiers
+layout (std430) buffer BirdBuffer {
     BirdData birds[];
 } birdBuffer;
 uniform float GameTime;

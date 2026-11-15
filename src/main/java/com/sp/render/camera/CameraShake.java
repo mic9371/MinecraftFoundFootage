@@ -31,7 +31,7 @@ public class CameraShake {
 
     public void tick(Camera camera) {
         if (ConfigStuff.enableRealCamera && !SPBRevampedClient.getCutsceneManager().isPlaying) {
-            float frameDelta = MinecraftClient.getInstance().getLastFrameDuration();
+            float frameDelta = MinecraftClient.getInstance().getRenderTickCounter().getLastFrameDuration();
             if (this.noiseY >= 1000) {
                 this.noiseY = 0;
             }

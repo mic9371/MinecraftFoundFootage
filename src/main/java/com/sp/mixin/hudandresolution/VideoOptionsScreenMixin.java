@@ -24,16 +24,14 @@ import java.util.function.Consumer;
 
 @Mixin(VideoOptionsScreen.class)
 public class VideoOptionsScreenMixin {
-    @Shadow private OptionListWidget list;
-
-    @Redirect(method = "init", at = @At(value = "NEW", target = "(Ljava/lang/String;Lnet/minecraft/client/option/SimpleOption$TooltipFactory;Lnet/minecraft/client/option/SimpleOption$ValueTextGetter;Lnet/minecraft/client/option/SimpleOption$Callbacks;Ljava/lang/Object;Ljava/util/function/Consumer;)Lnet/minecraft/client/option/SimpleOption;"))
-    private SimpleOption<Integer> redirectOptionConstructor(String key, SimpleOption.TooltipFactory tooltipFactory, SimpleOption.ValueTextGetter valueTextGetter, SimpleOption.Callbacks callbacks, Object defaultValue, Consumer changeCallback, @Local Window window, @Local Monitor monitor, @Local(ordinal = 1) int j){
+    @Redirect(method = "addOptions", at = @At(value = "NEW", target = "(Ljava/lang/String;Lnet/minecraft/client/option/SimpleOption$TooltipFactory;Lnet/minecraft/client/option/SimpleOption$ValueTextGetter;Lnet/minecraft/client/option/SimpleOption$Callbacks;Ljava/lang/Object;Ljava/util/function/Consumer;)Lnet/minecraft/client/option/SimpleOption;"))
+    private SimpleOption<Integer> redirectOptionConstructor(String key, SimpleOption.TooltipFactory tooltipFactory, SimpleOption.ValueTextGetter valueTextGetter, SimpleOption.Callbacks callbacks, Object defaultValue, Consumer changeCallback, @Local Window window, @Local Monitor monitor){
         int j2;
         if(ConfigStuff.enableVHSAspectRatio){
-            Optional<VideoMode> optional = VhsAspectRatio.currentVhsVideoMode != null ? VhsAspectRatio.currentVhsVideoMode : window.getVideoMode();
+            Optional<VideoMode> optional = VhsAspectRatio.currentVhsVideoMode != null ? VhsAspectRatio.currentVhsVideoMode : window.getFullscreenVideoMode();
             j2 = (Integer)optional.map(this::findClosestVhsVideoModeIndex).orElse(-1);
         } else {
-            Optional<VideoMode> optional = window.getVideoMode();
+            Optional<VideoMode> optional = window.getFullscreenVideoMode();
             j2 = (Integer)optional.map(monitor::findClosestVideoModeIndex).orElse(-1);
         }
 
@@ -58,13 +56,13 @@ public class VideoOptionsScreenMixin {
                 value -> {
                     if (monitor != null) {
                         Optional<VideoMode> videoMode = value == -1 ? Optional.empty() : ConfigStuff.enableVHSAspectRatio ? Optional.of(VhsAspectRatio.vhsAspectRatiosList.get(value)) : Optional.of(monitor.getVideoMode(value));
-                        window.setVideoMode(videoMode);
+                        window.setFullscreenVideoMode(videoMode);
                     }
                 }
         );
     }
 
-    @ModifyArg(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/OptionListWidget;addSingleOptionEntry(Lnet/minecraft/client/option/SimpleOption;)I", ordinal = 0))
+    @ModifyArg(method = "addOptions", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/OptionListWidget;addSingleOptionEntry(Lnet/minecraft/client/option/SimpleOption;)V", ordinal = 0))
     private SimpleOption addNormalVideoModeToList(SimpleOption<?> option){
         return VhsAspectRatio.normalVideoMode;
     }
@@ -79,7 +77,7 @@ public class VideoOptionsScreenMixin {
 
 //    @Inject(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/OptionListWidget;addSingleOptionEntry(Lnet/minecraft/client/option/SimpleOption;)I", ordinal = 0))
 //    private void createSimpleOption(CallbackInfo ci, @Local Monitor monitor, @Local Window window){
-//        Optional<VideoMode> optional = VhsAspectRatio.currentVhsVideoMode != null ? VhsAspectRatio.currentVhsVideoMode : window.getVideoMode();
+//        Optional<VideoMode> optional = VhsAspectRatio.currentVhsVideoMode != null ? VhsAspectRatio.currentVhsVideoMode : window.getFullscreenVideoMode();
 //        int j2 = (Integer)optional.map(this::findClosestVhsVideoModeIndex).orElse(-1);
 //
 //        VhsAspectRatio.vhsVideoMode = new SimpleOption<>(
@@ -101,7 +99,7 @@ public class VideoOptionsScreenMixin {
 //                        Optional<VideoMode> videoMode = value == -1 ? Optional.empty() : Optional.of(VhsAspectRatio.vhsAspectRatiosList.get(value));
 //                        if(ConfigStuff.enableVHSAspectRatio) {
 //                            System.out.println("SET");
-//                            window.setVideoMode(videoMode);
+//                            window.setFullscreenVideoMode(videoMode);
 //                        }
 //                        VhsAspectRatio.currentVhsVideoMode = videoMode;
 //                    }

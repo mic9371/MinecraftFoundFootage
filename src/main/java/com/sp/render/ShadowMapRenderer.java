@@ -37,7 +37,7 @@ public class ShadowMapRenderer {
         int height = client.getFramebuffer().viewportHeight;
         Frustum frustum;
 
-        AdvancedFbo shadowMap = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(new Identifier(SPBRevamped.MOD_ID, "shadowmap"));
+        AdvancedFbo shadowMap = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(Identifier.of(SPBRevamped.MOD_ID, "shadowmap"));
         if(shadowMap != null) {
             RenderSystem.setProjectionMatrix(shadowProjMat, VertexSorter.BY_Z);
 
@@ -50,10 +50,10 @@ public class ShadowMapRenderer {
             frustum.setPosition(cameraPos.x, cameraPos.y, cameraPos.z);
             accessor.setFrustum(frustum);
             accessor.invokeSetupTerrain(camera, frustum, false, false);
-            accessor.invokeRenderLayer(RenderLayer.getCutout(), shadowModelView, cameraPos.x, cameraPos.y, cameraPos.z, shadowProjMat);
-            accessor.invokeRenderLayer(RenderLayer.getCutoutMipped(), shadowModelView, cameraPos.x, cameraPos.y, cameraPos.z, shadowProjMat);
-            accessor.invokeRenderLayer(RenderLayer.getSolid(), shadowModelView, cameraPos.x, cameraPos.y, cameraPos.z, shadowProjMat);
-//            accessor.invokeRenderLayer(RenderLayers.getPoolTileLayer(), shadowModelView, cameraPos.x, cameraPos.y, cameraPos.z, shadowProjMat);
+            accessor.invokeRenderLayer(RenderLayer.getCutout(), cameraPos.x, cameraPos.y, cameraPos.z, shadowModelView.peek().getPositionMatrix(), shadowProjMat);
+            accessor.invokeRenderLayer(RenderLayer.getCutoutMipped(), cameraPos.x, cameraPos.y, cameraPos.z, shadowModelView.peek().getPositionMatrix(), shadowProjMat);
+            accessor.invokeRenderLayer(RenderLayer.getSolid(), cameraPos.x, cameraPos.y, cameraPos.z, shadowModelView.peek().getPositionMatrix(), shadowProjMat);
+//            accessor.invokeRenderLayer(RenderLayers.getPoolTileLayer(), cameraPos.x, cameraPos.y, cameraPos.z, shadowModelView.peek().getPositionMatrix(), shadowProjMat);
 
             if(client.world != null) {
                 VertexConsumerProvider.Immediate immediate = accessor.getBufferBuilders().getEntityVertexConsumers();
@@ -91,7 +91,7 @@ public class ShadowMapRenderer {
         int height = client.getFramebuffer().viewportHeight;
         Frustum frustum;
 
-        AdvancedFbo shadowMap = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(new Identifier(SPBRevamped.MOD_ID, "shadowmap"));
+        AdvancedFbo shadowMap = VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(Identifier.of(SPBRevamped.MOD_ID, "shadowmap"));
         if(shadowMap != null) {
             RenderSystem.setProjectionMatrix(shadowProjMat, VertexSorter.BY_Z);
 
@@ -108,10 +108,10 @@ public class ShadowMapRenderer {
                 accessor.invokeSetupTerrain(camera, frustum, false, false);
             }
 
-            accessor.invokeRenderLayer(RenderLayer.getCutout(), shadowModelView, cameraPos.x, cameraPos.y, cameraPos.z, shadowProjMat);
-            accessor.invokeRenderLayer(RenderLayer.getCutoutMipped(), shadowModelView, cameraPos.x, cameraPos.y, cameraPos.z, shadowProjMat);
-            accessor.invokeRenderLayer(RenderLayer.getSolid(), shadowModelView, cameraPos.x, cameraPos.y, cameraPos.z, shadowProjMat);
-//            accessor.invokeRenderLayer(RenderLayers.getCarpet(), shadowModelView, cameraPos.x, cameraPos.y, cameraPos.z, shadowProjMat);
+            accessor.invokeRenderLayer(RenderLayer.getCutout(), cameraPos.x, cameraPos.y, cameraPos.z, shadowModelView.peek().getPositionMatrix(), shadowProjMat);
+            accessor.invokeRenderLayer(RenderLayer.getCutoutMipped(), cameraPos.x, cameraPos.y, cameraPos.z, shadowModelView.peek().getPositionMatrix(), shadowProjMat);
+            accessor.invokeRenderLayer(RenderLayer.getSolid(), cameraPos.x, cameraPos.y, cameraPos.z, shadowModelView.peek().getPositionMatrix(), shadowProjMat);
+//            accessor.invokeRenderLayer(RenderLayers.getCarpet(), cameraPos.x, cameraPos.y, cameraPos.z, shadowModelView.peek().getPositionMatrix(), shadowProjMat);
 
 
             GL11.glDisable(GL30.GL_CLIP_DISTANCE0);

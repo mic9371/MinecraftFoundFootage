@@ -9,8 +9,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class ModDamageTypes {
-    public static final RegistryKey<DamageType> ACID_WATER = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(SPBRevamped.MOD_ID, "acid_water"));
-    public static final RegistryKey<DamageType> SMILER = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(SPBRevamped.MOD_ID, "smiler"));
+    public static final RegistryKey<DamageType> ACID_WATER = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(SPBRevamped.MOD_ID, "acid_water"));
+    public static final RegistryKey<DamageType> SMILER = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(SPBRevamped.MOD_ID, "smiler"));
 
     public static DamageSource of(World world, RegistryKey<DamageType> key){
         return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key));

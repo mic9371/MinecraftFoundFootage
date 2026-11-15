@@ -1,21 +1,21 @@
 package com.sp.networking.S2C;
 
-import com.sp.SPBRevampedClient;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
+import com.sp.SPBRevamped;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.util.Identifier;
 
-public class InvokeScreenShakePacket {
+public record InvokeScreenShakePacket(double speed, double trauma) implements CustomPayload {
+    public static final CustomPayload.Id<InvokeScreenShakePacket> ID = new CustomPayload.Id<>(Identifier.of(SPBRevamped.MOD_ID, "scr_shake"));
+    public static final PacketCodec<RegistryByteBuf, InvokeScreenShakePacket> CODEC = PacketCodec.tuple(
+            PacketCodecs.DOUBLE, InvokeScreenShakePacket::speed,
+            PacketCodecs.DOUBLE, InvokeScreenShakePacket::trauma,
+            InvokeScreenShakePacket::new);
 
-    public static void receive(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender){
-        double speed = buf.readDouble();
-        double trauma = buf.readDouble();
-
-        client.execute(()->{
-            SPBRevampedClient.getCameraShake().noiseSpeed = speed;
-            SPBRevampedClient.getCameraShake().trauma = trauma;
-        });
+    @Override
+    public Id<? extends CustomPayload> getId() {
+        return ID;
     }
-
 }

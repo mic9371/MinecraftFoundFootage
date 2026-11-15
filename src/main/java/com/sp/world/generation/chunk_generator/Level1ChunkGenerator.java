@@ -1,5 +1,6 @@
 package com.sp.world.generation.chunk_generator;
 
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.sp.SPBRevamped;
@@ -27,7 +28,7 @@ import java.util.Optional;
 
 @SuppressWarnings("OptionalIsPresent")
 public final class Level1ChunkGenerator extends BackroomsChunkGenerator {
-    public static final Codec<Level1ChunkGenerator> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<Level1ChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                             BiomeSource.CODEC.fieldOf("biome_source").forGetter(generator -> generator.biomeSource),
                             ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(generator -> generator.settings)
@@ -54,7 +55,7 @@ public final class Level1ChunkGenerator extends BackroomsChunkGenerator {
         StructurePlacementData structurePlacementData = new StructurePlacementData();
 
         if (isStartChunk(chunk)) {
-            Identifier roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/stairwell_1");
+            Identifier roomIdentifier = Identifier.of(SPBRevamped.MOD_ID, "level1/stairwell_1");
             structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
             Optional<StructureTemplate> stairwellStructureIn = structureTemplateManager.getTemplate(roomIdentifier);
 
@@ -86,7 +87,7 @@ public final class Level1ChunkGenerator extends BackroomsChunkGenerator {
                 boolean exitToLevel1 = random.nextBoolean();
 
                 if (exitToLevel1) {
-                    Identifier roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/stairwell2_1");
+                    Identifier roomIdentifier = Identifier.of(SPBRevamped.MOD_ID, "level1/stairwell2_1");
                     structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
                     Optional<StructureTemplate> stairwellStructureOutTo2 = structureTemplateManager.getTemplate(roomIdentifier);
 
@@ -99,7 +100,7 @@ public final class Level1ChunkGenerator extends BackroomsChunkGenerator {
                         );
                     }
                 }/* else {
-                    Identifier roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/stairwell324_1");
+                    Identifier roomIdentifier = Identifier.of(SPBRevamped.MOD_ID, "level1/stairwell324_1");
                     Optional<StructureTemplate> stairwellStructureOutTo324 = structureTemplateManager.getTemplate(roomIdentifier);
 
                     if (stairwellStructureOutTo324.isPresent()) {
@@ -115,7 +116,7 @@ public final class Level1ChunkGenerator extends BackroomsChunkGenerator {
         }
 
         if (noise1 > 0) {
-            Identifier roomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/megaroom1");
+            Identifier roomIdentifier = Identifier.of(SPBRevamped.MOD_ID, "level1/megaroom1");
             structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
             Optional<StructureTemplate> megaRoom = structureTemplateManager.getTemplate(roomIdentifier);
 
@@ -131,7 +132,7 @@ public final class Level1ChunkGenerator extends BackroomsChunkGenerator {
                         mutable.set(x, 19, z - 32),
                         structurePlacementData, random, 2);
 
-                Identifier lightRoomIdentifier = new Identifier(SPBRevamped.MOD_ID, "level1/light" + random.nextBetween(1,6));
+                Identifier lightRoomIdentifier = Identifier.of(SPBRevamped.MOD_ID, "level1/light" + random.nextBetween(1,6));
                 structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
 
                 Optional<StructureTemplate> lightStructure = structureTemplateManager.getTemplate(lightRoomIdentifier);
@@ -172,7 +173,7 @@ public final class Level1ChunkGenerator extends BackroomsChunkGenerator {
         return ((float) chunk.getPos().x) % SPBRevamped.FINAL_MAZE_SIZE == 0 && ((float) chunk.getPos().z) % SPBRevamped.FINAL_MAZE_SIZE == 0;
     }
 
-    protected Codec<? extends ChunkGenerator> getCodec() {
+    protected MapCodec<? extends ChunkGenerator> getCodec() {
         return CODEC;
     }
 }

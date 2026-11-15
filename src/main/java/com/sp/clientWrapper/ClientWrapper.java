@@ -1,5 +1,7 @@
 package com.sp.clientWrapper;
 
+import com.sp.render.deferred.DeferredRenderer;
+import com.sp.util.TeleportUtil;
 import com.sp.ModKeyBinds;
 import com.sp.SPBRevampedClient;
 import com.sp.block.custom.EmergencyLightBlock;
@@ -31,11 +33,11 @@ import com.sp.world.levels.custom.Level1BackroomsLevel;
 import com.sp.world.levels.custom.Level2BackroomsLevel;
 import com.sp.world.levels.custom.PoolroomsBackroomsLevel;
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.light.AreaLight;
-import foundry.veil.api.client.render.deferred.light.PointLight;
+import com.sp.render.deferred.light.AreaLight;
+import com.sp.render.deferred.light.PointLight;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import com.sp.networking.C2S.TargetEntitySync;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -157,7 +159,7 @@ public class ClientWrapper {
 
                 if (playerComponent.glitchTimer >= 3) {
                     if (SPBRevampedClient.isInLevel(BackroomsLevels.LEVEL324_BACKROOMS_LEVEL) && playerComponent.player.getWorld().getBlockState(playerComponent.player.getBlockPos().offset(Direction.DOWN, 3)).isOf(Blocks.RED_WOOL)) {
-                        playerComponent.player.teleport(playerComponent.player.getX(), playerComponent.player.getY() - 65, playerComponent.player.getZ());
+                        TeleportUtil.teleport(playerComponent.player, playerComponent.player.getX(), playerComponent.player.getY() - 65, playerComponent.player.getZ());
                     }
                 }
             }
@@ -181,13 +183,8 @@ public class ClientWrapper {
             if (playerComponent.getTargetEntity() != client.targetedEntity) {
                 playerComponent.setTargetEntity(client.targetedEntity);
 
-                PacketByteBuf buffer = PacketByteBufs.create();
-                if (playerComponent.getTargetEntity() != null) {
-                    buffer.writeInt(playerComponent.getTargetEntity().getId());
-                } else {
-                    buffer.writeInt(-1);
-                }
-                ClientPlayNetworking.send(InitializePackets.TARGET_ENTITY_SYNC, buffer);
+                int targetId = playerComponent.getTargetEntity() != null ? playerComponent.getTargetEntity().getId() : -1;
+                ClientPlayNetworking.send(new TargetEntitySync(targetId));
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -431,7 +428,7 @@ public class ClientWrapper {
                 block.pointLight = new PointLight();
 
 
-                VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(block.areaLight1
+                DeferredRenderer.get().getLightRenderer().addLight(block.areaLight1
                         .setBrightness(1.0f)
                         .setColor(1.0f, 0.0f, 0.0f)
                         .setSize(0.0, 0.0)
@@ -440,7 +437,7 @@ public class ClientWrapper {
                         .setPosition(new Vector3d(centerPos.x, centerPos.y, centerPos.z))
                         .setDistance(15)
                 );
-                VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(block.areaLight2
+                DeferredRenderer.get().getLightRenderer().addLight(block.areaLight2
                         .setBrightness(1.0f)
                         .setColor(1.0f, 0.0f, 0.0f)
                         .setSize(0.0, 0.0)
@@ -449,7 +446,7 @@ public class ClientWrapper {
                         .setPosition(new Vector3d(centerPos.x, centerPos.y, centerPos.z))
                         .setDistance(15)
                 );
-                VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(block.pointLight
+                DeferredRenderer.get().getLightRenderer().addLight(block.pointLight
                         .setBrightness(0.5f)
                         .setColor(1.0f, 0.0f, 0.0f)
                         .setPosition(new Vector3d(centerPos.x, centerPos.y, centerPos.z))
@@ -478,7 +475,7 @@ public class ClientWrapper {
         if (!block.initNormalLights) {
             block.pointLight = new PointLight();
             Vec3d centerPos = pos.toCenterPos().add(0.0f, -0.15625f, 0.0f);
-            VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(block.pointLight
+            DeferredRenderer.get().getLightRenderer().addLight(block.pointLight
                     .setBrightness(1.0f)
                     .setPosition(new Vector3d(centerPos.x, centerPos.y, centerPos.z))
                     .setRadius(15.0f)
@@ -518,7 +515,7 @@ public class ClientWrapper {
 
                     if (block.pointLight == null) {
                         block.pointLight = new PointLight();
-                        VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(block.pointLight
+                        DeferredRenderer.get().getLightRenderer().addLight(block.pointLight
                                 .setRadius(18f)
                                 .setBrightness(0.0024f)
                         );
@@ -569,13 +566,13 @@ public class ClientWrapper {
                     }
                 } else {
                     if (block.pointLight != null) {
-                        VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(block.pointLight);
+                        DeferredRenderer.get().getLightRenderer().removeLight(block.pointLight);
                         block.pointLight = null;
                     }
                 }
             } else {
                 if (block.pointLight != null) {
-                    VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(block.pointLight);
+                    DeferredRenderer.get().getLightRenderer().removeLight(block.pointLight);
                     block.pointLight = null;
                 }
             }
@@ -614,7 +611,7 @@ public class ClientWrapper {
 
                     if (block.pointLight == null) {
                         block.pointLight = new PointLight();
-                        VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(block.pointLight
+                        DeferredRenderer.get().getLightRenderer().addLight(block.pointLight
                                 .setRadius(18f)
                                 .setBrightness(0.0024f)
                         );
@@ -643,13 +640,13 @@ public class ClientWrapper {
                     }
                 } else {
                     if (block.pointLight != null) {
-                        VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(block.pointLight);
+                        DeferredRenderer.get().getLightRenderer().removeLight(block.pointLight);
                         block.pointLight = null;
                     }
                 }
             } else {
                 if (block.pointLight != null) {
-                    VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(block.pointLight);
+                    DeferredRenderer.get().getLightRenderer().removeLight(block.pointLight);
                     block.pointLight = null;
                 }
             }
@@ -689,7 +686,7 @@ public class ClientWrapper {
 
                     if (block.pointLight == null) {
                         block.pointLight = new PointLight();
-                        VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().addLight(block.pointLight
+                        DeferredRenderer.get().getLightRenderer().addLight(block.pointLight
                                 .setRadius(13f)
                                 .setColor((float) 255 / 255, (float) 240 / 255, (float) 100 / 255)
                                 .setPosition(position.x, position.y - 1, position.z)
@@ -698,7 +695,7 @@ public class ClientWrapper {
                     }
                 } else {
                     if (block.pointLight != null) {
-                        VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(block.pointLight);
+                        DeferredRenderer.get().getLightRenderer().removeLight(block.pointLight);
                         block.pointLight = null;
                     }
                     block.setPlayingSound(false);
@@ -706,11 +703,25 @@ public class ClientWrapper {
 
             } else {
                 if (block.pointLight != null) {
-                    VeilRenderSystem.renderer().getDeferredRenderer().getLightRenderer().removeLight(block.pointLight);
+                    DeferredRenderer.get().getLightRenderer().removeLight(block.pointLight);
                     block.pointLight = null;
                 }
             }
         }
     }
 
+
+    public static void tickLightningSky(net.minecraft.entity.LightningEntity lightning) {
+        if (MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getY() > 20) {
+            if (lightning.age == 1) {
+                SPBRevampedClient.isLightning = true;
+            }
+
+            if (lightning.age >= 3) {
+                SPBRevampedClient.isLightning = false;
+            }
+        } else {
+            lightning.kill();
+        }
+    }
 }

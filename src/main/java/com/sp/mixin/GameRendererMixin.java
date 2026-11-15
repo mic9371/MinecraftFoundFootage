@@ -1,5 +1,10 @@
 package com.sp.mixin;
 
+import org.spongepowered.asm.mixin.Unique;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import net.minecraft.client.network.ClientPlayerEntity;
 import com.sp.SPBRevamped;
 import com.sp.SPBRevampedClient;
 import com.sp.compat.modmenu.ConfigStuff;
@@ -32,13 +37,13 @@ public abstract class GameRendererMixin {
     @Unique
     Entity newCamera;
     @Unique
-    private static final Identifier shadowSolid = new Identifier(SPBRevamped.MOD_ID, "shadowmap/rendertype_solid");
+    private static final Identifier shadowSolid = Identifier.of(SPBRevamped.MOD_ID, "shadowmap/rendertype_solid");
 
     @Unique
-    private static final Identifier shadowEntity = new Identifier(SPBRevamped.MOD_ID, "shadowmap/rendertype_entity");
+    private static final Identifier shadowEntity = Identifier.of(SPBRevamped.MOD_ID, "shadowmap/rendertype_entity");
 
     @Unique
-    private static final Identifier warpEntity = new Identifier("spbrevamped", "warp_player");
+    private static final Identifier warpEntity = Identifier.of("spbrevamped", "warp_player");
 
     @Unique
     private float smoothPitch = 0.0f;
@@ -48,43 +53,58 @@ public abstract class GameRendererMixin {
 
     @Shadow @Final MinecraftClient client;
 
+    @Shadow @Final private Camera camera;
+
 
     @Shadow public abstract void setBlockOutlineEnabled(boolean blockOutlineEnabled);
     @Shadow public abstract void tick();
-    @Shadow protected abstract void renderHand(MatrixStack matrices, Camera camera, float tickDelta);
+    @Shadow protected abstract void renderHand(Camera camera, float tickDelta, Matrix4f matrix4f);
 
     @Shadow private static @Nullable ShaderProgram renderTypeEntityTranslucentProgram;
 
-    @Shadow public abstract void render(float tickDelta, long startTime, boolean tick);
 
-    @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;tiltViewWhenHurt(Lnet/minecraft/client/util/math/MatrixStack;F)V"))
-    public void renderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo ci) {
-        if (SPBRevampedClient.shouldRenderCameraEffect()) {
-            PlayerEntity player = this.client.player;
-            this.setBlockOutlineEnabled(true);
-
-            if (player != null) {
-                CutsceneManager cutsceneManager = SPBRevampedClient.getCutsceneManager();
-
-                if (ConfigStuff.enableRealCamera && !cutsceneManager.isPlaying && client.getCameraEntity() == player) {
-                    matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(CameraRoll.doCameraRoll(player, tickDelta)));
-                } else if (cutsceneManager.isPlaying) {
-                    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(cutsceneManager.cameraRotZ));
-                }
-            }
-        }
-    }
-
-    @ModifyArg(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/RotationAxis;rotationDegrees(F)Lorg/joml/Quaternionf;", ordinal = 2))
-    private float smoothPitch(float deg) {
+    /**
+     * Since 1.20.5 the world view rotation is conj(camera rotation) = Rx(pitch) * Ry(yaw + 180), the same matrix 1.20.1
+     * built on the view MatrixStack. This applies the camera roll / cutscene rotation (pre-multiplied, as 1.20.1 did
+     * before the pitch/yaw rotations) and the smoothed pitch/yaw that 1.20.1 applied via @ModifyArg on rotationDegrees.
+     */
+    @ModifyExpressionValue(method = "renderWorld", at = @At(value = "INVOKE", target = "Lorg/joml/Quaternionf;conjugate(Lorg/joml/Quaternionf;)Lorg/joml/Quaternionf;"))
+    private Quaternionf modifyViewRotation(Quaternionf original) {
         if (!SPBRevampedClient.shouldRenderCameraEffect()) {
-            return deg;
+            return original;
         }
 
         PlayerEntity player = this.client.player;
+        this.setBlockOutlineEnabled(true);
+
+        float tickDelta = this.camera.getLastTickDelta();
+        float pitch = this.smoothPitch(this.camera.getPitch());
+        float yaw = this.smoothYaw(this.camera.getYaw() + 180.0F);
+
+        Quaternionf prefix = null;
+        if (player != null) {
+            CutsceneManager cutsceneManager = SPBRevampedClient.getCutsceneManager();
+
+            if (ConfigStuff.enableRealCamera && !cutsceneManager.isPlaying && client.getCameraEntity() == player) {
+                prefix = RotationAxis.POSITIVE_Z.rotationDegrees(CameraRoll.doCameraRoll(player, tickDelta));
+            } else if (cutsceneManager.isPlaying) {
+                prefix = RotationAxis.POSITIVE_Y.rotationDegrees(cutsceneManager.cameraRotZ);
+            }
+        }
+
+        boolean smoothed = pitch != this.camera.getPitch() || yaw != this.camera.getYaw() + 180.0F;
+        Quaternionf view = smoothed
+                ? RotationAxis.POSITIVE_X.rotationDegrees(pitch).mul(RotationAxis.POSITIVE_Y.rotationDegrees(yaw))
+                : original;
+        return prefix != null ? prefix.mul(view) : view;
+    }
+
+    @Unique
+    private float smoothPitch(float deg) {
+        PlayerEntity player = this.client.player;
 
         if(player != null && ConfigStuff.enableSmoothCamera && client.options.getPerspective() == Perspective.FIRST_PERSON){
-            this.smoothYaw = MathStuff.Lerp(this.smoothYaw, deg, ConfigStuff.cameraSmoothing, client.getLastFrameDuration());
+            this.smoothYaw = MathStuff.Lerp(this.smoothYaw, deg, ConfigStuff.cameraSmoothing, client.getRenderTickCounter().getLastFrameDuration());
             return this.smoothYaw;
         } else {
             this.smoothYaw = deg;
@@ -93,16 +113,12 @@ public abstract class GameRendererMixin {
         return deg;
     }
 
-    @ModifyArg(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/RotationAxis;rotationDegrees(F)Lorg/joml/Quaternionf;", ordinal = 3))
+    @Unique
     private float smoothYaw(float deg) {
-        if (!SPBRevampedClient.shouldRenderCameraEffect()) {
-            return deg;
-        }
-
         PlayerEntity player = this.client.player;
 
         if(player != null && ConfigStuff.enableSmoothCamera && client.options.getPerspective() == Perspective.FIRST_PERSON){
-            this.smoothPitch = MathStuff.Lerp(this.smoothPitch, deg, ConfigStuff.cameraSmoothing, client.getLastFrameDuration());
+            this.smoothPitch = MathStuff.Lerp(this.smoothPitch, deg, ConfigStuff.cameraSmoothing, client.getRenderTickCounter().getLastFrameDuration());
             return this.smoothPitch;
         } else {
             this.smoothPitch = deg;
@@ -116,11 +132,12 @@ public abstract class GameRendererMixin {
     /// Dearest Chaos, Becasue I can -SpacePotato
 
     /**
-     * @author
-     * @reason
+     * Replaces vanilla view bobbing. Was an @Overwrite; Veil for 1.21.1 also injects into bobView, which an overwrite
+     * would break, so this cancels at HEAD instead.
      */
-    @Overwrite
-    private void bobView(MatrixStack matrices, float tickDelta){
+    @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
+    private void bobView(MatrixStack matrices, float tickDelta, CallbackInfo ci){
+        ci.cancel();
         if (this.client.getCameraEntity() instanceof PlayerEntity) {
             PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
             float f = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
@@ -185,20 +202,21 @@ public abstract class GameRendererMixin {
         cir.setReturnValue(shader.toShaderInstance());
     }
 
-    @Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderHand(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/Camera;F)V"))
-    private void redirect(GameRenderer instance, MatrixStack matrices, Camera camera, float tickDelta) {
+    @Redirect(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderHand(Lnet/minecraft/client/render/Camera;FLorg/joml/Matrix4f;)V"))
+    private void redirect(GameRenderer instance, Camera camera, float tickDelta, Matrix4f matrix4f) {
         if(!SPBRevampedClient.getCutsceneManager().isPlaying){
-            this.renderHand(matrices, camera, tickDelta);
+            this.renderHand(camera, tickDelta, matrix4f);
         }
     }
 
-    @Redirect(method = "updateTargetedEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;getReachDistance()F"))
-    private float increaseReach(ClientPlayerInteractionManager instance){
+    // Reach is an attribute since 1.20.5; 1.20.1 returned 6 for block reach and 36 (= 6^2) for squared entity reach
+    @Redirect(method = "updateCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getBlockInteractionRange()D"))
+    private double increaseReach(ClientPlayerEntity instance){
         return 6;
     }
 
-    @ModifyConstant(method = "updateTargetedEntity", constant = @Constant(doubleValue = 9.0))
-    private double increaseReach(double constant){
-        return 36;
+    @Redirect(method = "updateCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getEntityInteractionRange()D"))
+    private double increaseEntityReach(ClientPlayerEntity instance){
+        return 6;
     }
 }

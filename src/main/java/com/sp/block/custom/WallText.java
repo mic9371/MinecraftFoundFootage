@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -14,6 +15,13 @@ import net.minecraft.world.BlockView;
 
 @SuppressWarnings("deprecation")
 public class WallText extends HorizontalFacingBlock {
+    public static final MapCodec<WallText> CODEC = createCodec(WallText::new);
+
+    @Override
+    protected MapCodec<? extends WallText> getCodec() {
+        return CODEC;
+    }
+
     public WallText(Settings settings) {
         super(settings);
     }

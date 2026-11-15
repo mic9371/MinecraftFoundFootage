@@ -43,14 +43,6 @@ public abstract class MinecraftClientMixin {
         }
     }
 
-    @Inject(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;render(Z)V", shift = At.Shift.AFTER))
-    private void enableDeferredResourcePack(CallbackInfo ci){
-        if (instance != null && resourcePackManager != null) {
-            if(!resourcePackManager.getEnabledProfiles().contains(resourcePackManager.getProfile("veil:deferred"))) {
-                SPBRevamped.LOGGER.info("Re-enabled Deferred Resourcepack");
-                resourcePackManager.enable("veil:deferred");
-                options.refreshResourcePacks(resourcePackManager);
-            }
-        }
-    }
+    // The "veil:deferred" resource pack force-enable was removed: Veil for 1.21.1 has no such pack, and the deferred
+    // renderer's resources now ship inside this mod (see com.sp.render.deferred.DeferredRenderer).
 }

@@ -1,5 +1,6 @@
 package com.sp.block.custom.pipes;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -17,6 +18,13 @@ import net.minecraft.world.BlockView;
 
 @SuppressWarnings("deprecation")
 public class PipeCorner extends HorizontalFacingBlock {
+    public static final MapCodec<PipeCorner> CODEC = createCodec(PipeCorner::new);
+
+    @Override
+    protected MapCodec<? extends PipeCorner> getCodec() {
+        return CODEC;
+    }
+
     public static final DirectionProperty FACING = Properties.FACING;
     public static final IntProperty TYPE = IntProperty.of("type", 0, 2);
 

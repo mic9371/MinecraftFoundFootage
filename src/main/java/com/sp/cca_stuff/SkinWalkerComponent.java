@@ -8,9 +8,10 @@ import com.sp.entity.ik.parts.Segment;
 import com.sp.entity.ik.parts.ik_chains.IKChain;
 import com.sp.entity.ik.parts.ik_chains.TargetReachingIKChain;
 import com.sp.entity.ik.parts.sever_limbs.ServerLimb;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -128,7 +129,7 @@ public class SkinWalkerComponent implements AutoSyncedComponent {
 
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         this.isSneaking = tag.getBoolean("isSneaking");
         this.targetPlayerUUID = tag.getUuid("targetPlayerUUID");
         this.isChasing = tag.getBoolean("isChasing");
@@ -137,7 +138,7 @@ public class SkinWalkerComponent implements AutoSyncedComponent {
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putBoolean("isSneaking", this.isSneaking);
         tag.putUuid("targetPlayerUUID", this.targetPlayerUUID);
         tag.putBoolean("isChasing", this.isChasing);

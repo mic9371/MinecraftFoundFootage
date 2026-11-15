@@ -1,5 +1,7 @@
 package com.sp.mixin;
 
+import net.minecraft.util.math.ColorHelper;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import com.sp.cca_stuff.InitializeComponents;
 import com.sp.cca_stuff.SmilerComponent;
 import com.sp.entity.custom.SmilerEntity;
@@ -24,20 +26,18 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         this.entity = livingEntity;
     }
 
-    @ModifyConstant(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
-            constant = {
-                @Constant(floatValue = 1.0f, ordinal = 3),
-                @Constant(floatValue = 1.0f, ordinal = 4),
-                @Constant(floatValue = 1.0f, ordinal = 5),
-                @Constant(floatValue = 1.0f, ordinal = 6)
-            })
-    private float setOpacity(float constant){
+    // 1.20.1 replaced the four float RGBA constants passed to EntityModel#render; since 1.21 that is one ARGB int.
+    @ModifyArg(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;III)V"),
+            index = 4)
+    private int setOpacity(int color){
         if(entity instanceof SmilerEntity) {
             SmilerComponent component = InitializeComponents.SMILER.get(entity);
-            return component.getOpacity();
+            float opacity = component.getOpacity();
+            return ColorHelper.Argb.fromFloats(opacity, opacity, opacity, opacity);
         }
 
-        return constant;
+        return color;
     }
 
 }

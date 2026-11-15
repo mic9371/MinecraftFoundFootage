@@ -1,5 +1,6 @@
 package com.sp.block.custom.pipes;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
@@ -14,6 +15,13 @@ import net.minecraft.world.BlockView;
 
 @SuppressWarnings("deprecation")
 public class Pipe extends FacingBlock {
+    public static final MapCodec<Pipe> CODEC = createCodec(Pipe::new);
+
+    @Override
+    protected MapCodec<? extends Pipe> getCodec() {
+        return CODEC;
+    }
+
 
     private static final VoxelShape SHAPE_EAST = Block.createCuboidShape(0.0, 2.0, 2.0, 16.0, 16.0, 14.0);
     private static final VoxelShape SHAPE_WEST = Block.createCuboidShape(0.0, 2.0, 2.0, 16.0, 16.0, 14.0);

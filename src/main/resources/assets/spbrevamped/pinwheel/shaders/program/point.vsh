@@ -1,3 +1,5 @@
+// Declared here because Veil 1.21.1 drops #veil:buffer directives reached through #include
+#veil:buffer veil:camera VeilCamera
 #include veil:camera
 
 layout (location = 0) in vec3 Position;

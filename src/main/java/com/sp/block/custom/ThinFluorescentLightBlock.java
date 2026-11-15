@@ -1,12 +1,13 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import com.sp.block.entity.ThinFluorescentLightBlockEntity;
 import com.sp.init.ModBlockEntities;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -24,12 +25,19 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("deprecation")
 public class ThinFluorescentLightBlock extends BlockWithEntity {
-    public static final BooleanProperty ON = BooleanProperty.of("on");
-    public static final BooleanProperty COPY = BooleanProperty.of("copy");
-    public static final BooleanProperty BLACKOUT = BooleanProperty.of("blackout");
+    public static final MapCodec<ThinFluorescentLightBlock> CODEC = createCodec(ThinFluorescentLightBlock::new);
+
+    @Override
+    protected MapCodec<? extends ThinFluorescentLightBlock> getCodec() {
+        return CODEC;
+    }
+
+    public static final BooleanProperty ON = FluorescentLightBlock.ON; // shared: since 1.20.5 block state properties are compared by identity
+    public static final BooleanProperty COPY = FluorescentLightBlock.COPY; // shared: since 1.20.5 block state properties are compared by identity
+    public static final BooleanProperty BLACKOUT = FluorescentLightBlock.BLACKOUT; // shared: since 1.20.5 block state properties are compared by identity
 
     public static final DirectionProperty FACING = Properties.FACING;
-    public static final EnumProperty<WallMountLocation> FACE = Properties.WALL_MOUNT_LOCATION;
+    public static final EnumProperty<BlockFace> FACE = Properties.BLOCK_FACE;
 
     private static final VoxelShape FLOOR_X_AXIS_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 2.0, 10.0);
     private static final VoxelShape FLOOR_Z_AXIS_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 2.0, 16.0);
@@ -52,13 +60,13 @@ public class ThinFluorescentLightBlock extends BlockWithEntity {
             BlockState blockState;
             if (direction.getAxis() == Direction.Axis.Y) {
                 blockState = this.getDefaultState()
-                        .with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)
+                        .with(FACE, direction == Direction.UP ? BlockFace.CEILING : BlockFace.FLOOR)
                         .with(FACING, ctx.getHorizontalPlayerFacing())
                         .with(ON, true)
                         .with(BLACKOUT, false)
                         .with(COPY, false);
             } else {
-                blockState = this.getDefaultState().with(FACE, WallMountLocation.WALL).with(FACING, direction.getOpposite()).with(ON, true).with(BLACKOUT, false).with(COPY, false);
+                blockState = this.getDefaultState().with(FACE, BlockFace.WALL).with(FACING, direction.getOpposite()).with(ON, true).with(BLACKOUT, false).with(COPY, false);
             }
 
             if (blockState.canPlaceAt(ctx.getWorld(), ctx.getBlockPos())) {
@@ -138,7 +146,7 @@ public class ThinFluorescentLightBlock extends BlockWithEntity {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, ModBlockEntities.THIN_FLUORESCENT_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
+        return validateTicker(type, ModBlockEntities.THIN_FLUORESCENT_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
     }
 
 }

@@ -1,24 +1,24 @@
 package com.sp.networking.S2C;
 
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
+import com.sp.SPBRevamped;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.util.Identifier;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 
-public class SoundPacket {
+public record SoundPacket(RegistryEntry<SoundEvent> sound, float volume, float pitch) implements CustomPayload {
+    public static final CustomPayload.Id<SoundPacket> ID = new CustomPayload.Id<>(Identifier.of(SPBRevamped.MOD_ID, "snd"));
+    public static final PacketCodec<RegistryByteBuf, SoundPacket> CODEC = PacketCodec.tuple(
+            SoundEvent.ENTRY_PACKET_CODEC, SoundPacket::sound,
+            PacketCodecs.FLOAT, SoundPacket::volume,
+            PacketCodecs.FLOAT, SoundPacket::pitch,
+            SoundPacket::new);
 
-    public static void receive(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender){
-        RegistryEntry<SoundEvent> sound =  buf.readRegistryEntry(Registries.SOUND_EVENT.getIndexedEntries(), SoundEvent::fromBuf);
-        float volume = buf.readFloat();
-        float pitch = buf.readFloat();
-
-        client.execute(()->{
-            client.getSoundManager().play(PositionedSoundInstance.master(sound.value(), pitch, volume));
-        });
+    @Override
+    public Id<? extends CustomPayload> getId() {
+        return ID;
     }
-
 }

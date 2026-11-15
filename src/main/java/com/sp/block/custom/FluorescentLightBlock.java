@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import com.sp.block.entity.FluorescentLightBlockEntity;
 import com.sp.init.ModBlockEntities;
 import net.minecraft.block.Block;
@@ -19,6 +20,13 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class FluorescentLightBlock extends BlockWithEntity {
+    public static final MapCodec<FluorescentLightBlock> CODEC = createCodec(FluorescentLightBlock::new);
+
+    @Override
+    protected MapCodec<? extends FluorescentLightBlock> getCodec() {
+        return CODEC;
+    }
+
     public static final BooleanProperty ON = BooleanProperty.of("on");
     public static final BooleanProperty COPY = BooleanProperty.of("copy");
     public static final BooleanProperty BLACKOUT = BooleanProperty.of("blackout");
@@ -57,7 +65,7 @@ public class FluorescentLightBlock extends BlockWithEntity {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, ModBlockEntities.FLUORESCENT_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
+        return validateTicker(type, ModBlockEntities.FLUORESCENT_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
     }
 
     @Nullable

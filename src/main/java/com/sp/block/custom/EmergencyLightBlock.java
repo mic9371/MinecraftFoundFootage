@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import com.sp.block.entity.EmergencyLightBlockEntity;
 import com.sp.init.ModBlockEntities;
 import net.minecraft.block.Block;
@@ -9,7 +10,7 @@ import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -27,9 +28,16 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class EmergencyLightBlock extends BlockWithEntity {
+    public static final MapCodec<EmergencyLightBlock> CODEC = createCodec(EmergencyLightBlock::new);
+
+    @Override
+    protected MapCodec<? extends EmergencyLightBlock> getCodec() {
+        return CODEC;
+    }
+
     public static final BooleanProperty RED_LIGHT = BooleanProperty.of("red_light");
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
-    public static final EnumProperty<WallMountLocation> FACE = Properties.WALL_MOUNT_LOCATION;
+    public static final EnumProperty<BlockFace> FACE = Properties.BLOCK_FACE;
 
     public EmergencyLightBlock(Settings settings) {
         super(settings);
@@ -43,10 +51,10 @@ public class EmergencyLightBlock extends BlockWithEntity {
             BlockState blockState;
             if (direction.getAxis() == Direction.Axis.Y) {
                 blockState = this.getDefaultState()
-                        .with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)
+                        .with(FACE, direction == Direction.UP ? BlockFace.CEILING : BlockFace.FLOOR)
                         .with(FACING, ctx.getHorizontalPlayerFacing());
             } else {
-                blockState = this.getDefaultState().with(FACE, WallMountLocation.WALL).with(FACING, direction.getOpposite());
+                blockState = this.getDefaultState().with(FACE, BlockFace.WALL).with(FACING, direction.getOpposite());
             }
 
             if (blockState.canPlaceAt(ctx.getWorld(), ctx.getBlockPos())) {
@@ -96,7 +104,7 @@ public class EmergencyLightBlock extends BlockWithEntity {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, ModBlockEntities.EMERGENCY_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world, pos, state));
+        return validateTicker(type, ModBlockEntities.EMERGENCY_LIGHT_BLOCK_ENTITY, (world1, pos, state1, blockEntity) -> blockEntity.tick(world, pos, state));
     }
 
     @Override

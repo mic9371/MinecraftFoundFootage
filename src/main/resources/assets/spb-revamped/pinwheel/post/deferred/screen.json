@@ -1,0 +1,13 @@
+{
+  "stages": [
+    {
+      "type": "veil:mask",
+      "depth": true
+    },
+    {
+      "type": "veil:blit",
+      "shader": "spb-revamped:deferred/core/composite",
+      "out": "spb-revamped:deferred_post"
+    }
+  ]
+}

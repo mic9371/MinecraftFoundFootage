@@ -1,0 +1,16 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "spb-revamped:deferred/core/mix_opaque",
+      "out": "veil:opaque_final"
+    },
+    {
+      "type": "veil:copy",
+      "in": "veil:opaque",
+      "out": "veil:opaque_final",
+      "color": false,
+      "depth": true
+    }
+  ]
+}

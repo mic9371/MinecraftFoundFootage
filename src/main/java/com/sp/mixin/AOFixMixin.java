@@ -1,7 +1,7 @@
 package com.sp.mixin;
 
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.deferred.VeilDeferredRenderer;
+import com.sp.render.deferred.DeferredRenderer;
 import net.fabricmc.fabric.impl.client.indigo.Indigo;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.block.BlockModelRenderer;
@@ -192,7 +192,7 @@ public abstract class AOFixMixin {
         }
 
         //Reinserting veil's "Disable Ambient Occlusion"
-        VeilDeferredRenderer deferredRenderer = VeilRenderSystem.renderer().getDeferredRenderer();
+        DeferredRenderer deferredRenderer = DeferredRenderer.get();
         if (!deferredRenderer.getLightRenderer().isAmbientOcclusionEnabled()) {
             Arrays.fill(this.brightness, 1.0F);
         }

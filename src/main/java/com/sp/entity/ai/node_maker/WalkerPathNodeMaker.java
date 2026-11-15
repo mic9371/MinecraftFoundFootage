@@ -50,7 +50,7 @@ public class WalkerPathNodeMaker extends LandPathNodeMaker {
         BlockPos pos = new BlockPos(x, y, z);
 
         // Check if current position has air
-        if (!this.cachedWorld.getBlockState(pos).isAir()) {
+        if (!this.context.getWorld().getBlockState(pos).isAir()) {
             return null;
         }
 
@@ -78,12 +78,12 @@ public class WalkerPathNodeMaker extends LandPathNodeMaker {
 
                     // Check if position one block below support has air
                     BlockPos airCheck = mutable.up();
-                    if (!this.cachedWorld.getBlockState(airCheck).isAir()) {
+                    if (!this.context.getWorld().getBlockState(airCheck).isAir()) {
                         continue;
                     }
 
                     // Check if support block is solid
-                    if (isSolidSupport(this.cachedWorld, mutable)) {
+                    if (isSolidSupport(this.context.getWorld(), mutable)) {
                         return true;
                     }
                 }
@@ -103,8 +103,8 @@ public class WalkerPathNodeMaker extends LandPathNodeMaker {
                     for (int z = -radius; z <= radius; z++) {
                         mutable.set(start.getX() + x, start.getY() + y, start.getZ() + z);
 
-                        if (isSolidSupport(this.cachedWorld, mutable) &&
-                                this.cachedWorld.getBlockState(mutable.up()).isAir()) {
+                        if (isSolidSupport(this.context.getWorld(), mutable) &&
+                                this.context.getWorld().getBlockState(mutable.up()).isAir()) {
                             return mutable.toImmutable();
                         }
                     }

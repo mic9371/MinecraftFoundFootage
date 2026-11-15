@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -13,6 +14,13 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class ChainFence extends HorizontalFacingBlock {
+    public static final MapCodec<ChainFence> CODEC = createCodec(ChainFence::new);
+
+    @Override
+    protected MapCodec<? extends ChainFence> getCodec() {
+        return CODEC;
+    }
+
     private static final VoxelShape SIDE1 = Block.createCuboidShape(0.0, 0.0, 7.5, 16.0, 16.0, 8.5);
     private static final VoxelShape SIDE2 = Block.createCuboidShape(7.5, 0.0, 0.0, 8.5, 16.0, 16.0);
 

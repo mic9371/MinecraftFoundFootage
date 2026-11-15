@@ -4,11 +4,10 @@ import com.sp.SPBRevamped;
 import com.sp.block.SprintBlockSoundGroup;
 import com.sp.block.custom.*;
 import com.sp.block.custom.pipes.*;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.GlassBlock;
+import net.minecraft.block.TransparentBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -190,7 +189,7 @@ public class ModBlocks {
 
     //////Poolrooms Stuff//////
     public static final Block POOLROOMS_SKY_BLOCK = registerBlock("pool_sky",
-            new GlassBlock(FabricBlockSettings.copyOf(Blocks.GLASS).hardness(-1f).noBlockBreakParticles().sounds(SprintBlockSoundGroup.SILENT)));
+            new TransparentBlock(FabricBlockSettings.copyOf(Blocks.GLASS).hardness(-1f).noBlockBreakParticles().sounds(SprintBlockSoundGroup.SILENT)));
 
     public static final Block POOL_TILES = registerBlock("pool_tiles",
             new Block(FabricBlockSettings.copyOf(Blocks.STONE).hardness(-1f).solid().noBlockBreakParticles().sounds(SprintBlockSoundGroup.CONCRETE)));
@@ -262,11 +261,11 @@ public class ModBlocks {
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);
-        return Registry.register(Registries.BLOCK, new Identifier(SPBRevamped.MOD_ID, name), block);
+        return Registry.register(Registries.BLOCK, Identifier.of(SPBRevamped.MOD_ID, name), block);
     }
     private static Item registerBlockItem(String name, Block block) {
-        return Registry.register(Registries.ITEM, new Identifier(SPBRevamped.MOD_ID, name),
-                new BlockItem(block, new FabricItemSettings()));
+        return Registry.register(Registries.ITEM, Identifier.of(SPBRevamped.MOD_ID, name),
+                new BlockItem(block, new Item.Settings()));
     }
 
     public static void init() {

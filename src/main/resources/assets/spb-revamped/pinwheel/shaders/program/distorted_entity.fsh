@@ -1,4 +1,6 @@
 #version 150
+// Declared here because Veil 1.21.1 drops #veil:buffer directives reached through #include
+#veil:buffer veil:camera VeilCamera
 #include veil:fog
 
 uniform sampler2D Sampler0;

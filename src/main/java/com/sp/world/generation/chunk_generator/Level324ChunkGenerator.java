@@ -1,5 +1,6 @@
 package com.sp.world.generation.chunk_generator;
 
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.sp.SPBRevamped;
@@ -27,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class Level324ChunkGenerator extends BackroomsChunkGenerator {
-    public static final Codec<Level324ChunkGenerator> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<Level324ChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                             BiomeSource.CODEC.fieldOf("biome_source").forGetter(generator -> generator.biomeSource),
                             ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(generator -> generator.settings)
@@ -61,7 +62,7 @@ public class Level324ChunkGenerator extends BackroomsChunkGenerator {
                         StructurePlacementData structurePlacementData = new StructurePlacementData();
                         structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
 
-                        Optional<StructureTemplate> optional = structureTemplateManager.getTemplate(new Identifier(SPBRevamped.MOD_ID, "level324/hanging_lamp" + (random.nextBetween(0, 5) == 0 ? "_on" : "_off")));
+                        Optional<StructureTemplate> optional = structureTemplateManager.getTemplate(Identifier.of(SPBRevamped.MOD_ID, "level324/hanging_lamp" + (random.nextBetween(0, 5) == 0 ? "_on" : "_off")));
 
                         optional.ifPresent(structureTemplate -> structureTemplate.place(
                                 world,
@@ -76,7 +77,7 @@ public class Level324ChunkGenerator extends BackroomsChunkGenerator {
                             StructurePlacementData structurePlacementData = new StructurePlacementData();
                             structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
 
-                            Optional<StructureTemplate> optional = structureTemplateManager.getTemplate(new Identifier(SPBRevamped.MOD_ID, "inf_grass/utility_pole"));
+                            Optional<StructureTemplate> optional = structureTemplateManager.getTemplate(Identifier.of(SPBRevamped.MOD_ID, "inf_grass/utility_pole"));
 
                             optional.ifPresent(structureTemplate -> structureTemplate.place(
                                     world,
@@ -95,7 +96,7 @@ public class Level324ChunkGenerator extends BackroomsChunkGenerator {
                         StructurePlacementData structurePlacementData = new StructurePlacementData();
                         structurePlacementData.setMirror(BlockMirror.NONE).setRotation(BlockRotation.NONE).setIgnoreEntities(true);
 
-                        Optional<StructureTemplate> optional = structureTemplateManager.getTemplate(new Identifier(SPBRevamped.MOD_ID, "level324/gas_station"));
+                        Optional<StructureTemplate> optional = structureTemplateManager.getTemplate(Identifier.of(SPBRevamped.MOD_ID, "level324/gas_station"));
 
                         optional.ifPresent(structureTemplate -> structureTemplate.place(
                                 world,
@@ -108,7 +109,7 @@ public class Level324ChunkGenerator extends BackroomsChunkGenerator {
         }
     }
 
-    public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
+    public CompletableFuture<Chunk> populateNoise(Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
         int x = chunk.getPos().getStartX();
         int z = chunk.getPos().getStartZ();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -162,7 +163,7 @@ public class Level324ChunkGenerator extends BackroomsChunkGenerator {
     }
 
     @Override
-    protected Codec<? extends ChunkGenerator> getCodec() {
+    protected MapCodec<? extends ChunkGenerator> getCodec() {
         return CODEC;
     }
 }

@@ -32,15 +32,15 @@ public class BakedModelManagerMixin {
         LAYERS_TO_LOADERS = new HashMap<>(LAYERS_TO_LOADERS);
         LAYERS_TO_LOADERS.put(
                 RenderLayers.NORMAL_ATLAS_TEXTURE,
-                new Identifier(SPBRevamped.MOD_ID, "normal")
+                Identifier.of(SPBRevamped.MOD_ID, "normal")
         );
         LAYERS_TO_LOADERS.put(
                 RenderLayers.HEIGHT_ATLAS_TEXTURE,
-                new Identifier(SPBRevamped.MOD_ID, "height")
+                Identifier.of(SPBRevamped.MOD_ID, "height")
         );
         LAYERS_TO_LOADERS.put(
                 SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
-                new Identifier(SPBRevamped.MOD_ID, "blocks")
+                Identifier.of(SPBRevamped.MOD_ID, "blocks")
         );
     }
 

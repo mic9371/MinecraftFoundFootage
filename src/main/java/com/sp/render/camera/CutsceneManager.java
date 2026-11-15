@@ -6,21 +6,18 @@ import com.sp.cca_stuff.PlayerComponent;
 import com.sp.compat.modmenu.ConfigStuff;
 import com.sp.init.BackroomsLevels;
 import com.sp.init.ModSounds;
-import com.sp.mixin.cutscene.PathAccessor;
 import com.sp.networking.InitializePackets;
 import com.sp.util.MathStuff;
-import foundry.veil.api.client.anim.Frame;
-import foundry.veil.api.client.anim.Keyframe;
-import foundry.veil.api.client.anim.Path;
-import foundry.veil.api.client.util.Easings;
+import com.sp.render.camera.anim.Frame;
+import com.sp.render.camera.anim.Keyframe;
+import com.sp.render.camera.anim.Path;
+import foundry.veil.api.client.util.Easing;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -60,22 +57,22 @@ public class CutsceneManager {
         this.client = MinecraftClient.getInstance();
         this.cameraRotZ = 0;
         this.cameraPathPos = new Path(List.of(
-                new Keyframe(new Vec3d(0.5,220,0.5), Vec3d.ZERO, Vec3d.ZERO, MathStuff.millisecToTick(this.duration), Easings.Easing.easeInSine),
-                new Keyframe(new Vec3d(0.5,27,0.5), Vec3d.ZERO, Vec3d.ZERO,0, Easings.Easing.linear)
+                new Keyframe(new Vec3d(0.5,220,0.5), Vec3d.ZERO, Vec3d.ZERO, MathStuff.millisecToTick(this.duration), Easing.EASE_IN_SINE),
+                new Keyframe(new Vec3d(0.5,27,0.5), Vec3d.ZERO, Vec3d.ZERO,0, Easing.LINEAR)
         ), false, false);
         this.cameraPathRotX = new Path(List.of(
-                new Keyframe(Vec3d.ZERO, new Vec3d(80,0,0), Vec3d.ZERO,MathStuff.millisecToTick(this.duration) / 2, Easings.Easing.easeInOutSine),
-                new Keyframe(Vec3d.ZERO, new Vec3d(60,0,0), Vec3d.ZERO,MathStuff.millisecToTick(this.duration) / 2, Easings.Easing.easeInOutSine),
-                new Keyframe(Vec3d.ZERO, new Vec3d(110,0,0), Vec3d.ZERO,0, Easings.Easing.easeInOutSine)
+                new Keyframe(Vec3d.ZERO, new Vec3d(80,0,0), Vec3d.ZERO,MathStuff.millisecToTick(this.duration) / 2, Easing.EASE_IN_OUT_SINE),
+                new Keyframe(Vec3d.ZERO, new Vec3d(60,0,0), Vec3d.ZERO,MathStuff.millisecToTick(this.duration) / 2, Easing.EASE_IN_OUT_SINE),
+                new Keyframe(Vec3d.ZERO, new Vec3d(110,0,0), Vec3d.ZERO,0, Easing.EASE_IN_OUT_SINE)
         ), false, false);
         this.cameraPathRotY = new Path(List.of(
-                new Keyframe(Vec3d.ZERO, new Vec3d(0,0,0), Vec3d.ZERO, MathStuff.millisecToTick(this.duration), Easings.Easing.linear),
-                new Keyframe(Vec3d.ZERO, new Vec3d(0,120,0), Vec3d.ZERO,0, Easings.Easing.linear)
+                new Keyframe(Vec3d.ZERO, new Vec3d(0,0,0), Vec3d.ZERO, MathStuff.millisecToTick(this.duration), Easing.LINEAR),
+                new Keyframe(Vec3d.ZERO, new Vec3d(0,120,0), Vec3d.ZERO,0, Easing.LINEAR)
         ), false, false);
         this.cameraPathRotZ = new Path(List.of(
-                new Keyframe(Vec3d.ZERO, new Vec3d(0,0,20), Vec3d.ZERO, MathStuff.millisecToTick(this.duration) / 2, Easings.Easing.easeInOutSine),
-                new Keyframe(Vec3d.ZERO, new Vec3d(0,0,-20), Vec3d.ZERO,MathStuff.millisecToTick(this.duration) / 2, Easings.Easing.easeInOutSine),
-                new Keyframe(Vec3d.ZERO, new Vec3d(0,0,0), Vec3d.ZERO,0, Easings.Easing.easeInOutSine)
+                new Keyframe(Vec3d.ZERO, new Vec3d(0,0,20), Vec3d.ZERO, MathStuff.millisecToTick(this.duration) / 2, Easing.EASE_IN_OUT_SINE),
+                new Keyframe(Vec3d.ZERO, new Vec3d(0,0,-20), Vec3d.ZERO,MathStuff.millisecToTick(this.duration) / 2, Easing.EASE_IN_OUT_SINE),
+                new Keyframe(Vec3d.ZERO, new Vec3d(0,0,0), Vec3d.ZERO,0, Easing.EASE_IN_OUT_SINE)
         ), false, false);
     }
 
@@ -116,7 +113,7 @@ public class CutsceneManager {
                 ConfigStuff.lightRenderDistance = 1000;
                 this.startTime = System.currentTimeMillis();
                 this.isPlaying = true;
-//                SPBRevampedClient.getCameraShake().setCameraShake(MathStuff.millisecToTick(this.duration), 1, Easings.Easing.linear, true);
+//                SPBRevampedClient.getCameraShake().setCameraShake(MathStuff.millisecToTick(this.duration), 1, Easing.LINEAR, true);
                 client.getSoundManager().play(PositionedSoundInstance.master(ModSounds.FALLING, 1.0f));
             }
             float timer = (float) (System.currentTimeMillis() - this.startTime) / this.duration;
@@ -160,15 +157,15 @@ public class CutsceneManager {
 
     private Vec3d lerpedCameraRot(float timer){
 
-        double interpolateX = MathStuff.mod(timer * ((PathAccessor) cameraPathRotX).getFrames().size(), 1);
+        double interpolateX = MathStuff.mod(timer * cameraPathRotX.getFrames().size(), 1);
         double currentFrameRotX = cameraPathRotX.frameAtProgress(timer).getRotation().x;
         double prevFrameRotX = previousFrameAtProgress(cameraPathRotX, timer).getRotation().x;
 
-        double interpolateY = MathStuff.mod(timer * ((PathAccessor) cameraPathRotY).getFrames().size(), 1);
+        double interpolateY = MathStuff.mod(timer * cameraPathRotY.getFrames().size(), 1);
         double currentFrameRotY = cameraPathRotY.frameAtProgress(timer).getRotation().y;
         double prevFrameRotY = previousFrameAtProgress(cameraPathRotY, timer).getRotation().y;
 
-        double interpolateZ = MathStuff.mod(timer * ((PathAccessor) cameraPathRotZ).getFrames().size(), 1);
+        double interpolateZ = MathStuff.mod(timer * cameraPathRotZ.getFrames().size(), 1);
         double currentFrameRotZ = cameraPathRotZ.frameAtProgress(timer).getRotation().z;
         double prevFrameRotZ = previousFrameAtProgress(cameraPathRotZ, timer).getRotation().z;
 
@@ -180,7 +177,7 @@ public class CutsceneManager {
     }
 
     private Vec3d lerpedCameraPos(float timer){
-        double interpolatePos = MathStuff.mod(timer * ((PathAccessor) cameraPathPos).getFrames().size(), 1);
+        double interpolatePos = MathStuff.mod(timer * cameraPathPos.getFrames().size(), 1);
         Vec3d currentFramePos = cameraPathPos.frameAtProgress(timer).getPosition();
         Vec3d prevFramePos = previousFrameAtProgress(cameraPathPos, timer).getPosition();
 
@@ -216,7 +213,7 @@ public class CutsceneManager {
     }
 
     private Frame previousFrameAtProgress(Path path, double progress){
-        List<Frame> frames = ((PathAccessor) path).getFrames();
+        List<Frame> frames = path.getFrames();
         int index = (int) (frames.size() * progress) - 1;
         if(index < 0){
             return frames.get(0);

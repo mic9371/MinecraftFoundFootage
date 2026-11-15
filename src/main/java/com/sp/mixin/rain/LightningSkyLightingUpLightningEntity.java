@@ -1,10 +1,9 @@
 package com.sp.mixin.rain;
 
+import com.sp.clientWrapper.ClientWrapper;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.sp.SPBRevampedClient;
 import com.sp.init.BackroomsLevels;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LightningEntity;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -20,17 +19,9 @@ public class LightningSkyLightingUpLightningEntity {
         }
 
 
-        if (MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().player.getY() > 20) {
-            if (thiz.age == 1) {
-                SPBRevampedClient.isLightning = true;
-            }
-
-            if (thiz.age >= 3) {
-                SPBRevampedClient.isLightning = false;
-            }
-        } else {
-            thiz.kill();
-        }
+        // Client-only logic lives in ClientWrapper so this common mixin does not reference client classes
+        // (which made dedicated servers fail to load LightningEntity).
+        ClientWrapper.tickLightningSky(thiz);
     }
 
     @WrapMethod(method = "spawnFire")

@@ -3,7 +3,7 @@ package com.sp.block.custom.pipes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("deprecation")
 public class ThinPipe extends Block {
     public static final DirectionProperty FACING = Properties.FACING;
-    public static final EnumProperty<WallMountLocation> FACE = Properties.WALL_MOUNT_LOCATION;
+    public static final EnumProperty<BlockFace> FACE = Properties.BLOCK_FACE;
 
     private static final VoxelShape FLOOR_X_AXIS_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 2.0, 10.0);
     private static final VoxelShape FLOOR_Z_AXIS_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 2.0, 16.0);
@@ -77,10 +77,10 @@ public class ThinPipe extends Block {
             BlockState blockState;
             if (direction.getAxis() == Direction.Axis.Y) {
                 blockState = this.getDefaultState()
-                        .with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)
+                        .with(FACE, direction == Direction.UP ? BlockFace.CEILING : BlockFace.FLOOR)
                         .with(FACING, ctx.getHorizontalPlayerFacing());
             } else {
-                blockState = this.getDefaultState().with(FACE, WallMountLocation.WALL).with(FACING, direction.getOpposite());
+                blockState = this.getDefaultState().with(FACE, BlockFace.WALL).with(FACING, direction.getOpposite());
             }
 
             if (blockState.canPlaceAt(ctx.getWorld(), ctx.getBlockPos())) {

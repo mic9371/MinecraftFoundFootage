@@ -1,5 +1,7 @@
 package com.sp.entity.ik.parts;
 
+import net.minecraft.item.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -47,7 +49,7 @@ public class WorldCollidingSegment extends Segment {
                     this.getPosition(),
                     RaycastContext.ShapeType.COLLIDER,
                     RaycastContext.FluidHandling.NONE,
-                    new ArrowEntity(this.level, this.getPosition().x, this.getPosition().y, this.getPosition().z)
+                    new ArrowEntity(this.level, this.getPosition().x, this.getPosition().y, this.getPosition().z, new ItemStack(Items.ARROW), null)
             )).getPos();
 
             super.move(collisionPoint);

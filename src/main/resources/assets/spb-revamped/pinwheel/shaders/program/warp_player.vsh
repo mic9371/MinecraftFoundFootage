@@ -1,3 +1,5 @@
+// Declared here because Veil 1.21.1 drops #veil:buffer directives reached through #include
+#veil:buffer veil:camera VeilCamera
 #include veil:camera
 #include veil:fog
 #include veil:light

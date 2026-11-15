@@ -1,5 +1,6 @@
 package com.sp.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -17,6 +18,13 @@ import net.minecraft.world.BlockView;
 
 @SuppressWarnings("deprecation")
 public class BottomTrim extends HorizontalFacingBlock {
+    public static final MapCodec<BottomTrim> CODEC = createCodec(BottomTrim::new);
+
+    @Override
+    protected MapCodec<? extends BottomTrim> getCodec() {
+        return CODEC;
+    }
+
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final IntProperty SIDES = IntProperty.of("sides", 1, 4);
 

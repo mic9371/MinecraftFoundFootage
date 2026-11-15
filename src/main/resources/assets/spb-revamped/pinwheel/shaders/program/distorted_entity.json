@@ -1,8 +1,8 @@
 {
     "blend": {
         "func": "add",
-        "srcrgb": "srcalpha",
-        "dstrgb": "1-srcalpha"
+        "srcrgb": "src_alpha",
+        "dstrgb": "one_minus_src_alpha"
     },
     "vertex": "spb-revamped:distorted_entity",
     "fragment": "spb-revamped:distorted_entity",
